@@ -128,13 +128,14 @@ function TinyCanvas(canvas) {
       sin = Math.sin,
       currentTexture = null,
       renderer = null,
-      locA, locB, locC;
+      locA, locB, locC,
+      indexA, indexB;
 
   gl.blendFunc(770, 771);
   gl.enable(3042);
   gl.useProgram(shader);
   gl.bindBuffer(34963, IBO);
-  for (var indexA = indexB = 0; indexA < MAX_BATCH * VERTICES_PER_QUAD; indexA += VERTICES_PER_QUAD, indexB += 4)
+  for (indexA = indexB = 0; indexA < MAX_BATCH * VERTICES_PER_QUAD; indexA += VERTICES_PER_QUAD, indexB += 4)
     vIndexData[indexA + 0] = indexB,
       vIndexData[indexA + 1] = indexB + 1,
       vIndexData[indexA + 2] = indexB + 2,
