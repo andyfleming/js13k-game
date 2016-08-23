@@ -162,7 +162,7 @@ var frameCount = 0;
  * Sets source on all images to start loading
  */
 function load() {
-  PlayerImage.src = 'assets/person_cut.png';
+  PlayerImage.src = 'person_cut_tiny.png';
 }
 
 /**
