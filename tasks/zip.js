@@ -4,9 +4,8 @@ const rename    = require('gulp-rename');
 
 module.exports = () => {
   gulp.task( 'zip', [ 'build', 'template' ], () => {
-    return gulp.src('./dist/index.min.html')
-      .pipe( rename('index.html') )
+    return gulp.src('./build/dist/*')
       .pipe( zip('game.zip') )
-      .pipe( gulp.dest('dist') );
+      .pipe( gulp.dest('build') );
   });
 };

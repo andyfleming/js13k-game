@@ -7,7 +7,13 @@ const uglify      = require('gulp-uglify');
 const buffer      = require('vinyl-buffer');
 const source      = require('vinyl-source-stream');
 const rename      = require('gulp-rename');
-const livereload  = require('gulp-livereload');
+
+/*
+build/
+  compile/
+  dist/           images and index.min.html
+  whatever.zip
+ */
 
 module.exports = () => {
 
@@ -21,14 +27,13 @@ module.exports = () => {
     .pipe( buffer() )
     .pipe( srcmaps.init({ loadMaps: true }) )
     .pipe( srcmaps.write( './' ) )
-    .pipe( gulp.dest('./dist') )
-    .pipe( livereload({ start: true }) );;
+    .pipe( gulp.dest('./build/compile') )
   });
 
   gulp.task( 'build-min', [ 'build-full' ], () => {
-    return gulp.src('./dist/main.js')
+    return gulp.src('./build/compile/main.js')
       .pipe( uglify() )
       .pipe( rename('main.min.js') )
-      .pipe( gulp.dest('./dist') );
+      .pipe( gulp.dest('./build/compile') );
   });
 };

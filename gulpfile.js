@@ -1,12 +1,9 @@
 'use strict';
 
 const gulp        = require('gulp');
-const livereload  = require('gulp-livereload');
-
-livereload.listen();
 
 // Bootstrap individual task files
-[ 'build', 'css', 'template', 'watch', 'zip' ]
+[ 'build', 'css', 'template', 'watch', 'zip', 'copy-images' ]
   .forEach( task => require(`./tasks/${ task }`)() );
 
-gulp.task( 'default', [ 'build', 'css', 'template', 'zip' ] );
+gulp.task( 'default', ['copy-images', 'build', 'css', 'template', 'zip' ] );
