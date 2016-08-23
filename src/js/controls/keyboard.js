@@ -3,16 +3,16 @@
  */
 export default function keyboard() {
 
-  var keys = {};
+  var keys = {}
 
   document.addEventListener('keydown', function(e) {
-    keys[e.key] = true;
-  });
+    keys[e.key] = true
+  })
 
   document.addEventListener('keyup', function(e) {
-    keys[e.key] = false;
-  });
+    keys[e.key] = false
+  })
 
-  return keys;
+  return keys
 
 }
