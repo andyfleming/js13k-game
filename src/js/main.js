@@ -1,8 +1,14 @@
 
 import './libs/tiny-canvas.js';
 
-import Sprite from './classes/sprite.js';
+import Sprite from './graphics/sprite.js';
+import keyboard from './controls/keyboard'
+import CONFIG from './config/config.js'
 
+/**
+ * Track keyboard key state in an object
+ */
+var key = keyboard();
 
 /**
  * Tiny-Canvas Canvas
@@ -17,58 +23,25 @@ var CANVAS = TC(document.getElementById('c'));
 var GL = CANVAS.g;
 
 /**
- * Is RIGHT key pressed
- * @type {Boolean}
+ * Store the player state in an object
+ *
+ * @todo Consider improving name of this and/or sprite object "Player"
  */
-var RIGHT = false;
+var player = {
 
-/**
- * Is LEFT key pressed
- * @type {Boolean}
- */
-var LEFT = false;
+  /**
+   * is player touching the ground
+   *
+   * @type {Boolean}
+   */
+  onGround: true,
 
-/**
- * Is JUMP Key pressed
- * @type {Boolean}
- */
-var JUMP = false;
+  /**
+   * Set jumps available to the default max
+   */
+  jumpsLeft: CONFIG.MOVEMENT.JUMPS_ALLOWED
 
-/**
- * Number of Jumps
- * @type {Number}
- */
-var JUMPS = 2;
-
-/**
- * Positive jump speed
- * @type {Number}
- */
-var JUMP_SPEED = 8;
-/**
- * Direction Player is facing
- * R = right L = left
- * @type {String}
- */
-var DIR = 'r';
-
-/**
- * is Player touching the ground
- * @type {Boolean}
- */
-var GROUND = true;
-
-/**
- * Player walk speed
- * @type {Number}
- */
-var WALK_SPEED = 1;
-
-/**
- * Top Player walk speed
- * @type {Number}
- */
-var TOP_SPEED = 4;
+};
 
 /**
  * Number of images whose load has completed
@@ -111,11 +84,6 @@ var PlayerFrames = [
   [48, 0, 16, 20],
   [64, 0, 16, 20]
 ];
-/**
- * TODO: Add desc
- * @type {Number}
- */
-var GRAVITY = 0.5;
 
 /**
  * Proxy func for Math.random
@@ -192,37 +160,39 @@ function create() {
  */
 function update() {
   GLOBAL_FRAME_COUNTER++;
-  Player.direction = DIR;
+
   /**
    * HANDLE KEY PRESSES
    * update player speeds by preset speeds
    */
-  if (RIGHT) {
-    Player.speedX = Math.min(Player.speedX + WALK_SPEED, TOP_SPEED);
+  if (key[CONFIG.KEY.MOVE_LEFT]) {
+    Player.direction = 'l';
+    Player.speedX = Math.max(Player.speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX);
   }
 
-  if (LEFT) {
-    Player.speedX = Math.max(Player.speedX - WALK_SPEED, -TOP_SPEED);
+  if (key[CONFIG.KEY.MOVE_RIGHT]) {
+    Player.direction = 'r';
+    Player.speedX = Math.min(Player.speedX + CONFIG.MOVEMENT.WALK_SPEED, CONFIG.MOVEMENT.WALK_SPEED_MAX);
   }
 
-  if (GROUND && (RIGHT || LEFT)) {
+  if (player.onGround && (key[CONFIG.KEY.MOVE_RIGHT] || key[CONFIG.KEY.MOVE_LEFT])) {
     Player.animate(GLOBAL_FRAME_COUNTER);
-  } else if (GROUND) {
+  } else if (player.onGround) {
     Player.setFrame(4);
   } else {
     Player.setFrame(0);
   }
 
-  if (JUMP && GROUND) {
-    Player.speedY = -JUMP_SPEED;
-    GROUND = false;
-    JUMPS -= 1;
+  if (key[CONFIG.KEY.JUMP] && player.onGround) {
+    Player.speedY = -CONFIG.MOVEMENT.JUMP_SPEED;
+    player.onGround = false;
+    player.jumpsLeft -= 1;
   }
 
-  if (JUMP && !GROUND && JUMPS > 0 && Player.speedY > -5) {
-    Player.speedY = -JUMP_SPEED;
-    GROUND = false;
-    JUMPS -= 1;
+  if (key[CONFIG.KEY.JUMP] && !player.onGround && player.jumpsLeft > 0 && Player.speedY > -5) {
+    Player.speedY = -CONFIG.MOVEMENT.JUMP_SPEED;
+    player.onGround = false;
+    player.jumpsLeft -= 1;
   }
 
   /**
@@ -234,14 +204,14 @@ function update() {
   /**
    * Update Player gravity
    */
-  Player.speedY += GRAVITY;
+  Player.speedY += CONFIG.WORLD.GRAVITY;
 
   /**
    * Apply friction to player if they're walking
    */
   if (Math.abs(Player.speedX) < 1) {
     Player.speedX = 0;
-  } else if (GROUND) {
+  } else if (player.onGround) {
     Player.speedX *= 0.8;
   } else {
     Player.speedX *= 0.95;
@@ -253,8 +223,8 @@ function update() {
   if (Player.posY + Player.height >= MAX_Y) {
     Player.posY = MAX_Y - Player.height;
     Player.speedY = 0;
-    GROUND = true;
-    JUMPS = 2;
+    player.onGround = true;
+    player.jumpsLeft = CONFIG.MOVEMENT.JUMPS_ALLOWED;
   } else if (Player.posY < MIN_Y) {
     Player.posY = MIN_Y;
   }
@@ -294,39 +264,6 @@ function mainLoop() {
   update();
   draw();
 }
-
-/**
- * Handler for keyUp events
- * @param  {Event} event Any key presses
- */
-document.onkeydown = function (event) {
-  if (event.keyCode === 37) {
-    LEFT = true;
-    DIR = 'l';
-    event.preventDefault();
-  } else if (event.keyCode === 38) {
-    JUMP = true;
-    event.preventDefault();
-  } else if (event.keyCode === 39) {
-    RIGHT = true;
-    DIR = 'r';
-    event.preventDefault();
-  }
-};
-
-/**
- * Handler for keyDown events
- * @param  {Event} event Any key up
- */
-document.onkeyup = function (event) {
-  if (event.keyCode === 37) {
-    LEFT = false;
-  } else if (event.keyCode === 38) {
-    JUMP = false;
-  } else if (event.keyCode === 39) {
-    RIGHT = false;
-  }
-};
 
 /**
  * Callback for image load
