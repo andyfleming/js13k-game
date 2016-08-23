@@ -50,7 +50,7 @@ var JUMP_SPEED = 8;
  * R = right L = left
  * @type {String}
  */
-var DIR = 'R';
+var DIR = 'r';
 
 /**
  * is Player touching the ground
@@ -155,7 +155,7 @@ var MIN_Y = 0;
 var DisplayObjectArray = [];
 
 var currentFrame = 0;
-var frameCount = 0;
+var GLOBAL_FRAME_COUNTER = 0;
 
 
 /**
@@ -177,12 +177,13 @@ function loadComplete() {
  * Creates all sprites
  */
 function create() {
-  Player = new Sprite(20, 0, PlayerTexture, PlayerFrames[currentFrame]);
+  Player = new Sprite(20, 0, PlayerTexture, PlayerFrames, currentFrame, 4);
 
   CANVAS.bkg(0.227, 0.227, 0.227);
 
   mainLoop();
 }
+
 
 /**
  * MAIN LOOP UPDATE
@@ -190,16 +191,14 @@ function create() {
  * only read and set values if at all possible
  */
 function update() {
+  GLOBAL_FRAME_COUNTER++;
+  Player.direction = DIR;
   /**
    * HANDLE KEY PRESSES
    * update player speeds by preset speeds
    */
   if (RIGHT) {
     Player.speedX = Math.min(Player.speedX + WALK_SPEED, TOP_SPEED);
-    // currentFrame += 1;
-    // if (PlayerFrames.length - 1 === currentFrame) {
-    //   currentFrame = 0;
-    // }
   }
 
   if (LEFT) {
@@ -207,17 +206,11 @@ function update() {
   }
 
   if (GROUND && (RIGHT || LEFT)) {
-    if (frameCount % 4 === 0) {
-      currentFrame = (PlayerFrames.length - 1 === currentFrame) ? 0 : ++currentFrame;
-      Player.updateFrame(PlayerFrames[currentFrame]);
-    }
-    frameCount++;
+    Player.animate(GLOBAL_FRAME_COUNTER);
   } else if (GROUND) {
-    currentFrame = 4;
-    Player.updateFrame(PlayerFrames[currentFrame]);
+    Player.setFrame(4);
   } else {
-    currentFrame = 0;
-    Player.updateFrame(PlayerFrames[currentFrame]);
+    Player.setFrame(0);
   }
 
   if (JUMP && GROUND) {
@@ -286,29 +279,9 @@ function draw() {
    */
   CANVAS.cls();
 
-  CANVAS.push();
-  CANVAS.trans(Player.posX, Player.posY);
-  CANVAS.rot(Player.rotation);
-
-  if (DIR === 'R') {
-    CANVAS.scale(1, 1);
-  } else {
-    CANVAS.scale(-1, 1);
-  }
-
-  CANVAS.img(
-    PlayerTexture,
-    -Player.halfWidth,
-    0,
-    Player.width,
-    Player.height,
-    Player.u0,
-    Player.v0,
-    Player.u1,
-    Player.v1
-  );
-
-  CANVAS.pop();
+  // TODO: Push player and other sprites into an array or a coulpe arrays
+  // and call _update and _draw on all objects
+  Player._draw(CANVAS);
 
   CANVAS.flush();
 }
@@ -329,14 +302,14 @@ function mainLoop() {
 document.onkeydown = function (event) {
   if (event.keyCode === 37) {
     LEFT = true;
-    DIR = 'L';
+    DIR = 'l';
     event.preventDefault();
   } else if (event.keyCode === 38) {
     JUMP = true;
     event.preventDefault();
   } else if (event.keyCode === 39) {
     RIGHT = true;
-    DIR = 'R';
+    DIR = 'r';
     event.preventDefault();
   }
 };
@@ -357,7 +330,6 @@ document.onkeyup = function (event) {
 
 /**
  * Callback for image load
- * @return {[type]} [description]
  */
 PlayerImage.onload = function () {
   PlayerTexture = TCTex(GL, PlayerImage, PlayerImage.width, PlayerImage.height);
