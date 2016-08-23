@@ -30,11 +30,6 @@ var GL = CANVAS.g;
 var player = {
 
   /**
-   * can be right or left (L or R)
-   */
-  direction: 'R',
-
-  /**
    * is player touching the ground
    *
    * @type {Boolean}
