@@ -300,7 +300,7 @@ function draw() {
     PlayerTexture,
     -Player.halfWidth,
     0,
-    Player.width * 2,
+    Player.width,
     Player.height,
     Player.u0,
     Player.v0,
