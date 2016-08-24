@@ -3,8 +3,10 @@
 import './libs/tiny-canvas.js'
 
 import Sprite from './graphics/sprite.js'
+import Group from './graphics/group'
 import keyboard from './controls/keyboard'
 import CONFIG from './config/config.js'
+
 
 /**
  * Track keyboard key state in an object
@@ -54,7 +56,8 @@ var IMAGES_LOADED = 0
  * Total Number of images expected to load
  * @type {Number}
  */
-var TOTAL_IMAGES = 1
+var TOTAL_IMAGES = 2
+
 
 /**
  * Player Sprite object
@@ -85,6 +88,17 @@ var PlayerFrames = [
   [48, 0, 16, 20],
   [64, 0, 16, 20]
 ]
+
+var EnemyGroup = {}
+var EnemyImage = new Image()
+var EnemyTexture = null
+var EnemyFrames = [
+  [0, 0, 16, 20],
+  [16, 0, 16, 20],
+  [32, 0, 16, 20],
+  [48, 0, 16, 20]
+]
+
 
 /**
  * Proxy func for Math.random
@@ -117,12 +131,6 @@ var MAX_Y = CANVAS.c.height
  */
 var MIN_Y = 0
 
-/**
- * Array of objects to push to the update + draw functions
- * @type {Array}
- */
-var DisplayObjectArray = []
-
 var currentFrame         = 0
 var GLOBAL_FRAME_COUNTER = 0
 
@@ -132,6 +140,7 @@ var GLOBAL_FRAME_COUNTER = 0
  */
 function load() {
   PlayerImage.src = 'person_cut_tiny.png'
+  EnemyImage.src = 'enemy1.png'
 }
 
 /**
@@ -147,6 +156,8 @@ function loadComplete() {
  */
 function create() {
   Player = new Sprite(20, 0, PlayerTexture, PlayerFrames, currentFrame, 4)
+  EnemyGroup = new Group(EnemyTexture, EnemyFrames, 3)
+  EnemyGroup.create(10)
 
   CANVAS.bkg(0.227, 0.227, 0.227)
 
@@ -161,7 +172,7 @@ function create() {
  */
 function update() {
   GLOBAL_FRAME_COUNTER++
-
+  EnemyGroup._update()
   /**
    * HANDLE KEY PRESSES
    * update player speeds by preset speeds
@@ -253,6 +264,7 @@ function draw() {
   // TODO: Push player and other sprites into an array or a coulpe arrays
   // and call _update and _draw on all objects
   Player._draw(CANVAS)
+  EnemyGroup._draw(CANVAS)
 
   CANVAS.flush()
 }
@@ -271,6 +283,12 @@ function mainLoop() {
  */
 PlayerImage.onload = function() {
   PlayerTexture = TCTex(GL, PlayerImage, PlayerImage.width, PlayerImage.height)
+  IMAGES_LOADED += 1
+  loadComplete()
+}
+
+EnemyImage.onload = function() {
+  EnemyTexture = TCTex(GL, EnemyImage, EnemyImage.width, EnemyImage.height)
   IMAGES_LOADED += 1
   loadComplete()
 }
