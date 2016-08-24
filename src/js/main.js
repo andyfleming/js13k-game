@@ -105,7 +105,7 @@ var EnemyFrames = [
  * @type {Function}
  * @returns {Number} Between 0 & 1
  */
-var rand = Math.random()
+var rand = Math.random
 
 /**
  * Canvas Width (256)
@@ -130,6 +130,9 @@ var MAX_Y = CANVAS.c.height
  * @type {Number}
  */
 var MIN_Y = 0
+
+var ACTION_WAIT = 8
+var ACTION_COUNTER = ACTION_WAIT
 
 var currentFrame         = 0
 var GLOBAL_FRAME_COUNTER = 0
@@ -157,7 +160,10 @@ function loadComplete() {
 function create() {
   Player = new Sprite(20, 0, PlayerTexture, PlayerFrames, currentFrame, 4)
   EnemyGroup = new Group(EnemyTexture, EnemyFrames, 3)
-  EnemyGroup.create(10)
+  EnemyGroup.create(2, [50, 10], [
+    (Player.direction === 'r') ? rand() * 10 : rand() * -10,
+    ((rand() * 10) - 5)
+  ])
 
   CANVAS.bkg(0.227, 0.227, 0.227)
 
@@ -172,7 +178,16 @@ function create() {
  */
 function update() {
   GLOBAL_FRAME_COUNTER++
-  EnemyGroup._update()
+  ACTION_COUNTER = (ACTION_COUNTER === 0) ? 0 : ACTION_COUNTER - 1
+  if (key[CONFIG.KEY.ACTION] && !ACTION_COUNTER) {
+    EnemyGroup.create(
+      1,
+      [Player.posX, Player.posY - 15],
+      [(Player.direction === 'r') ? rand() * 10 : rand() * -10,
+       ((rand() * 10) - 5)])
+    ACTION_COUNTER = ACTION_WAIT
+  }
+  EnemyGroup._update(MIN_X, MAX_X, MIN_Y, MAX_Y)
   /**
    * HANDLE KEY PRESSES
    * update player speeds by preset speeds
@@ -263,9 +278,9 @@ function draw() {
 
   // TODO: Push player and other sprites into an array or a coulpe arrays
   // and call _update and _draw on all objects
-  Player._draw(CANVAS)
   EnemyGroup._draw(CANVAS)
 
+  Player._draw(CANVAS)
   CANVAS.flush()
 }
 
