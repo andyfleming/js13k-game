@@ -27,15 +27,16 @@ function Group(texture, frames, startingFrame) {
     }
   }
 
-  this._update = function(MIN_X, MAX_X, MIN_Y, MAX_Y) {
+  this._update = function(timewarp, MIN_X, MAX_X, MIN_Y, MAX_Y) {
     var sprite = {}
     var i = 0
+    timewarp = timewarp || 1
     for (i = 0; i < this.count; i++) {
       if (this._spriteArray[i]) {
         sprite = this._spriteArray[i]
-        sprite.posX += sprite.speedX
-        sprite.posY += sprite.speedY
-        sprite.speedY += CONFIG.WORLD.GRAVITY
+        sprite.posX += (sprite.speedX * timewarp)
+        sprite.posY += (sprite.speedY * timewarp)
+        sprite.speedY += (CONFIG.WORLD.GRAVITY * timewarp)
 
         // X axis bounds
         if (sprite.posX > MAX_X) {

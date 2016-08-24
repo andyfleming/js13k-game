@@ -179,7 +179,9 @@ function create() {
 function update() {
   GLOBAL_FRAME_COUNTER++
   ACTION_COUNTER = (ACTION_COUNTER === 0) ? 0 : ACTION_COUNTER - 1
-  if (key[CONFIG.KEY.ACTION] && !ACTION_COUNTER) {
+
+  console.log(!Player.onGround)
+  if (key[CONFIG.KEY.ACTION] && !ACTION_COUNTER && !player.onGround) {
     EnemyGroup.create(
       1,
       [Player.posX, Player.posY - 15],
@@ -187,7 +189,15 @@ function update() {
        ((rand() * 10) - 5)])
     ACTION_COUNTER = ACTION_WAIT
   }
-  EnemyGroup._update(MIN_X, MAX_X, MIN_Y, MAX_Y)
+
+  if (key[CONFIG.KEY.ACTION] && player.onGround) {
+    // if (GLOBAL_FRAME_COUNTER % 10 === 0) {
+    EnemyGroup._update(0.1, MIN_X, MAX_X, MIN_Y, MAX_Y)
+    // }
+
+  } else {
+    EnemyGroup._update(1, MIN_X, MAX_X, MIN_Y, MAX_Y)
+  }
   /**
    * HANDLE KEY PRESSES
    * update player speeds by preset speeds
