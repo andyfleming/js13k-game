@@ -2,10 +2,11 @@
 
 import './libs/tiny-canvas.js'
 
-import Sprite from './graphics/sprite.js'
-import Group from './graphics/group'
+import Sprite from './graphics/sprite'
+import Enemy from './entities/enemy'
+import Group from './entities/group'
 import keyboard from './controls/keyboard'
-import CONFIG from './config/config.js'
+import CONFIG from './config/config'
 
 
 /**
@@ -159,11 +160,16 @@ function loadComplete() {
  */
 function create() {
   Player = new Sprite(20, 0, PlayerTexture, PlayerFrames, currentFrame, 4)
-  EnemyGroup = new Group(EnemyTexture, EnemyFrames, 3)
-  EnemyGroup.create(2, [50, 10], [
-    (Player.direction === 'r') ? rand() * 10 : rand() * -10,
-    ((rand() * 10) - 5)
-  ])
+
+  EnemyGroup = new Group(Enemy, EnemyTexture, EnemyFrames, 3, {
+    origin: [0, 0],
+    speed: [
+      (Player.direction === 'r') ? rand() * 10 : rand() * -10,
+      ((rand() * 10) - 5)
+    ]
+  })
+
+  EnemyGroup.create(2)
 
   CANVAS.bkg(0.227, 0.227, 0.227)
 
@@ -177,26 +183,27 @@ function create() {
  * only read and set values if at all possible
  */
 function update() {
+  var ENEMY_TIME = 1
   GLOBAL_FRAME_COUNTER++
   ACTION_COUNTER = (ACTION_COUNTER === 0) ? 0 : ACTION_COUNTER - 1
 
-  console.log(!Player.onGround)
-  if (key[CONFIG.KEY.ACTION] && !ACTION_COUNTER && !player.onGround) {
-    EnemyGroup.create(
-      1,
-      [Player.posX, Player.posY - 15],
-      [(Player.direction === 'r') ? rand() * 10 : rand() * -10,
-       ((rand() * 10) - 5)])
-    ACTION_COUNTER = ACTION_WAIT
-  }
+  if (key[CONFIG.KEY.TIMEWARP]) { ENEMY_TIME = 0.1 }
 
-  if (key[CONFIG.KEY.ACTION] && player.onGround) {
-    // if (GLOBAL_FRAME_COUNTER % 10 === 0) {
-    EnemyGroup._update(0.1, MIN_X, MAX_X, MIN_Y, MAX_Y)
-    // }
+  EnemyGroup.update(ENEMY_TIME, {
+    MIN_X: MIN_X,
+    MIN_Y: MIN_Y,
+    MAX_X: MAX_X,
+    MAX_Y: MAX_Y,
+    GRAVITY: CONFIG.WORLD.GRAVITY
+  })
 
-  } else {
-    EnemyGroup._update(1, MIN_X, MAX_X, MIN_Y, MAX_Y)
+  if (key[CONFIG.KEY.DEV_K]) {
+    EnemyGroup.origin = [Player.posX, Player.posY - 15]
+    EnemyGroup.speed = [
+      (Player.direction === 'r') ? rand() * 10 : rand() * -10,
+      ((rand() * 10) - 5)
+    ]
+    EnemyGroup.create(1)
   }
   /**
    * HANDLE KEY PRESSES
@@ -288,7 +295,8 @@ function draw() {
 
   // TODO: Push player and other sprites into an array or a coulpe arrays
   // and call _update and _draw on all objects
-  EnemyGroup._draw(CANVAS)
+  // EnemyGroup._draw(CANVAS)
+  EnemyGroup.draw(CANVAS)
 
   Player._draw(CANVAS)
   CANVAS.flush()

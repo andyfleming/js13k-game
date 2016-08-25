@@ -7,7 +7,8 @@ export default {
     MOVE_LEFT: 'a',
     MOVE_RIGHT: 'd',
     JUMP: 'w',
-    ACTION: ' '
+    TIMEWARP: ' ',
+    DEV_K: 'k'
   },
 
   MOVEMENT: {
