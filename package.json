@@ -5,7 +5,10 @@
   "scripts": {
     "test": "gulp"
   },
-  "author": "Stephen Murray <spmurrayzzz>",
+  "contributors": [
+    "Andy Fleming <andy@andyfleming.com>",
+    "Gus Suarez <suarez.gus42@gmail.com>"
+  ],
   "license": "MIT",
   "devDependencies": {
     "gulp": "3.9.1",
