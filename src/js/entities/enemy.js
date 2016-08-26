@@ -5,14 +5,7 @@ import U from '../utils'
 var ENEMY_COUNT = 0
 
 /**
- * @class EnemyEntity
- * @type Entity
- * @param {[type]} origin        [description]
- * @param {[type]} speed         [description]
- * @param {[type]} texture       [description]
- * @param {[type]} frames        [description]
- * @param {[type]} startingFrame [description]
- * @param {[type]} animSpeed     [description]
+ * @class Enemy
  */
 function Enemy(origin, speed, texture, frames, startingFrame, animSpeed) {
   this.texture = texture
