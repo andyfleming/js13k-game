@@ -2,9 +2,12 @@
 
 import './libs/tiny-canvas.js'
 
-import Sprite from './graphics/sprite.js'
+import Sprite from './graphics/sprite'
+import Enemy from './entities/enemy'
+import Group from './entities/group'
 import keyboard from './controls/keyboard'
-import CONFIG from './config/config.js'
+import CONFIG from './config/config'
+
 
 /**
  * Track keyboard key state in an object
@@ -54,7 +57,8 @@ var IMAGES_LOADED = 0
  * Total Number of images expected to load
  * @type {Number}
  */
-var TOTAL_IMAGES = 1
+var TOTAL_IMAGES = 2
+
 
 /**
  * Player Sprite object
@@ -86,12 +90,23 @@ var PlayerFrames = [
   [64, 0, 16, 20]
 ]
 
+var EnemyGroup = {}
+var EnemyImage = new Image()
+var EnemyTexture = null
+var EnemyFrames = [
+  [0, 0, 16, 20],
+  [16, 0, 16, 20],
+  [32, 0, 16, 20],
+  [48, 0, 16, 20]
+]
+
+
 /**
  * Proxy func for Math.random
  * @type {Function}
  * @returns {Number} Between 0 & 1
  */
-var rand = Math.random()
+var rand = Math.random
 
 /**
  * Canvas Width (256)
@@ -117,11 +132,8 @@ var MAX_Y = CANVAS.c.height
  */
 var MIN_Y = 0
 
-/**
- * Array of objects to push to the update + draw functions
- * @type {Array}
- */
-var DisplayObjectArray = []
+var ACTION_WAIT = 8
+var ACTION_COUNTER = ACTION_WAIT
 
 var currentFrame         = 0
 var GLOBAL_FRAME_COUNTER = 0
@@ -132,6 +144,7 @@ var GLOBAL_FRAME_COUNTER = 0
  */
 function load() {
   PlayerImage.src = 'person_cut_tiny.png'
+  EnemyImage.src = 'enemy1.png'
 }
 
 /**
@@ -148,6 +161,16 @@ function loadComplete() {
 function create() {
   Player = new Sprite(20, 0, PlayerTexture, PlayerFrames, currentFrame, 4)
 
+  EnemyGroup = new Group(Enemy, EnemyTexture, EnemyFrames, 3, {
+    origin: [0, 0],
+    speed: [
+      (Player.direction === 'r') ? rand() * 10 : rand() * -10,
+      ((rand() * 10) - 5)
+    ]
+  })
+
+  EnemyGroup.create(2)
+
   CANVAS.bkg(0.227, 0.227, 0.227)
 
   mainLoop()
@@ -160,8 +183,28 @@ function create() {
  * only read and set values if at all possible
  */
 function update() {
+  var ENEMY_TIME = 1
   GLOBAL_FRAME_COUNTER++
+  ACTION_COUNTER = (ACTION_COUNTER === 0) ? 0 : ACTION_COUNTER - 1
 
+  if (key[CONFIG.KEY.TIMEWARP]) { ENEMY_TIME = 0.1 }
+
+  EnemyGroup.update(ENEMY_TIME, {
+    MIN_X: MIN_X,
+    MIN_Y: MIN_Y,
+    MAX_X: MAX_X,
+    MAX_Y: MAX_Y,
+    GRAVITY: CONFIG.WORLD.GRAVITY
+  })
+
+  if (key[CONFIG.KEY.DEV_K]) {
+    EnemyGroup.origin = [Player.posX, Player.posY - 15]
+    EnemyGroup.speed = [
+      (Player.direction === 'r') ? rand() * 10 : rand() * -10,
+      ((rand() * 10) - 5)
+    ]
+    EnemyGroup.create(1)
+  }
   /**
    * HANDLE KEY PRESSES
    * update player speeds by preset speeds
@@ -252,8 +295,10 @@ function draw() {
 
   // TODO: Push player and other sprites into an array or a coulpe arrays
   // and call _update and _draw on all objects
-  Player._draw(CANVAS)
+  // EnemyGroup._draw(CANVAS)
+  EnemyGroup.draw(CANVAS)
 
+  Player._draw(CANVAS)
   CANVAS.flush()
 }
 
@@ -271,6 +316,12 @@ function mainLoop() {
  */
 PlayerImage.onload = function() {
   PlayerTexture = TCTex(GL, PlayerImage, PlayerImage.width, PlayerImage.height)
+  IMAGES_LOADED += 1
+  loadComplete()
+}
+
+EnemyImage.onload = function() {
+  EnemyTexture = TCTex(GL, EnemyImage, EnemyImage.width, EnemyImage.height)
   IMAGES_LOADED += 1
   loadComplete()
 }
