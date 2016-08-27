@@ -132,9 +132,6 @@ var MAX_Y = CANVAS.c.height
  */
 var MIN_Y = 0
 
-var ACTION_WAIT = 8
-var ACTION_COUNTER = ACTION_WAIT
-
 var currentFrame         = 0
 var GLOBAL_FRAME_COUNTER = 0
 
@@ -185,7 +182,6 @@ function create() {
 function update() {
   var ENEMY_TIME = 1
   GLOBAL_FRAME_COUNTER++
-  ACTION_COUNTER = (ACTION_COUNTER === 0) ? 0 : ACTION_COUNTER - 1
 
   if (key[CONFIG.KEY.TIMEWARP]) { ENEMY_TIME = 0.1 }
 
