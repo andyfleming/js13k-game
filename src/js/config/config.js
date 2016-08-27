@@ -6,7 +6,9 @@ export default {
     //JUMP: 'ArrowUp'
     MOVE_LEFT: 'a',
     MOVE_RIGHT: 'd',
-    JUMP: 'w'
+    JUMP: 'w',
+    TIMEWARP: ' ',
+    DEV_K: 'k'
   },
 
   MOVEMENT: {

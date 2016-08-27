@@ -1,29 +1,29 @@
-import Emitter from './emitter.js';
+import Emitter from './emitter.js'
 
-function BaseClass() {};
+function BaseClass() {}
 
-function extend( target ) {
-  var superProto = this.prototype || {},
-    proto = Object.create( superProto );
+function extend(target) {
+  var superProto = this.prototype || {}
+  var proto = Object.create(superProto)
 
-  Object.keys( target ).forEach(function( key ) {
-    if ( target.hasOwnProperty( key ) ) {
-      proto[ key ] = target[ key ];
+  Object.keys(target).forEach(function(key) {
+    if (target.hasOwnProperty(key)) {
+      proto[key] = target[key]
     }
-  });
+  })
 
   function Base() {
-    Emitter.call( this );
-    if ( typeof this.init === 'function' ) {
-      this.init.apply( this, arguments );
+    Emitter.call(this)
+    if (typeof this.init === 'function') {
+      this.init.apply(this, arguments)
     }
   }
 
-  Base.extend = extend;
-  Base.prototype = proto;
-  Base.prototype.constructor = Base;
+  Base.extend = extend
+  Base.prototype = proto
+  Base.prototype.constructor = Base
 
-  return Base;
+  return Base
 }
 
-export default extend.call( BaseClass, Emitter.prototype );
+export default extend.call(BaseClass, Emitter.prototype)

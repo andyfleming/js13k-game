@@ -1,162 +1,167 @@
 /**
- * @class An Image based DisplayObject
- * @param {Number} x            Starting X position
- * @param {Number} y            Starting Y position
+ * @class Sprite
+ * @param {number} x            Starting X position
+ * @param {number} y            Starting Y position
  * @param {TCTexture} texture   Tiny-Canvas Texture object
- * @param {Array[]} frames      Array of arrays of frame position data [x, y, width, height]
- * @param {Number} startingFrame Animation frame to start on
- * @param {Number}  animSpeed    Game frames per animation frame
+ * @param {Frame[]} frames Array of arrays of frame position data [x, y, width, height]
+ * @param {number} startingFrame Animation frame to start on
+ * @param {number}  animSpeed    Game frames per animation frame
  * @return {Sprite}
  */
-function Sprite(x, y, texture, frames, startingFrame, animSpeed   ) {
+function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
   /**
    * Canvas X position
-   * @type {Number}
+   * @inner
+   * @type {number}
    */
-  this.posX = x;
+  this.posX = x
 
   /**
    * Canvas Y position
-   * @type {Number}
+   * @type {number}
    */
-  this.posY = y;
+  this.posY = y
 
   /**
    * tinyCanvas Texture
    * @type {TCTexture}
    */
-  this.texture = texture;
+  this.texture = texture
 
   /**
    * Speed on the X plane
    * Left = 0, Right = Canvas Width
-   * @type {Number}
+   * @type {number}
    */
-  this.speedX = 0;
+  this.speedX = 0
 
   /**
    * Speed on the Y plane.
    * Top = 0, Bottom = Canvas.height
-   * @type {Number}
+   * @type {number}
    */
-  this.speedY = 0;
+  this.speedY = 0
 
   /**
    * Rotation ?? Radians? Degrees?
-   * @type {Number}
+   * @type {number}
    */
-  this.rotation = 0;
+  this.rotation = 0
 
   /**
    * Direction, either 'l' or 'r'
    * @type {String}
    */
-  this.direction = 'r';
+  this.direction = 'r'
 
   /**
    * Game frames per animation frame
-   * @type {Number}
+   * @type {number}
    */
   this.animSpeed = animSpeed
 
   /**
    * Array of frames
-   * @type {Array}
+   * @type {Frame[]}
    */
-  this.frames = frames;
+  this.frames = frames
 
   /**
    * Current animation frame
-   * @type {Number}
+   * @type {number}
    */
-  this.currentFrame = startingFrame;
+  this.currentFrame = startingFrame
 
   /**
    * Udpates frame
-   * @param  {Frame} newFrame frame
+   * @method updateFrame
+   * @param {Frame} newFrame next frame to render
    */
-  this.updateFrame = function (newFrame) {
+  this.updateFrame = function(newFrame) {
     /**
      * Frame width
-     * @type {Number}
+     * @type {number}
      */
-    this.width = newFrame[2];
+    this.width = newFrame[2]
 
     /**
      * Frame Height
      * @type {[type]}
      */
-    this.height = newFrame[3];
+    this.height = newFrame[3]
 
     /**
-     * FrameX / Texture's total width;
-     * @type {Number}
+     * FrameX / Texture's total width
+     * @type {number}
      */
-    this.u0 = newFrame[0] / texture.width;
+    this.u0 = newFrame[0] / texture.width
 
     /**
      * FrameY / Texture's total height
-     * @type {Number}
+     * @type {number}
      */
-    this.v0 = newFrame[1] / texture.height;
+    this.v0 = newFrame[1] / texture.height
 
     /**
      * u0 plus (Frame's width / Texture's total Width)
-     * @type {Number}
+     * @type {number}
      */
-    this.u1 = this.u0 + (newFrame[2] / texture.width);
+    this.u1 = this.u0 + (newFrame[2] / texture.width)
 
     /**
      * v0 plus (Frame's height / Texture's total height)
      * @type {[type]}
      */
-    this.v1 = this.v0 + (newFrame[3] / texture.height);
+    this.v1 = this.v0 + (newFrame[3] / texture.height)
 
     /**
      * Half of the Frame's width
-     * @type {Number}
+     * @type {number}
      */
-    this.halfWidth = newFrame[2] / 2;
+    this.halfWidth = newFrame[2] / 2
 
     /**
      * Half of the Frame's height
-     * @type {Number}
+     * @type {number}
      */
-    this.halfHeight = newFrame[3] / 2;
-  };
+    this.halfHeight = newFrame[3] / 2
+  }
 
   /**
    * Forcibly set frame to certain position
-   * @param {Number} framePos index of frame from this.frames[]
+   * @method setFrame
+   * @param {number} framePos index of frame from this.frames[]
    */
-  this.setFrame = function (framePos) {
-    if (this.currentFrame === framePos) return;
-    this.currentFrame = framePos;
-    this.updateFrame(this.frames[this.currentFrame]);
+  this.setFrame = function(framePos) {
+    if (this.currentFrame === framePos) return
+    this.currentFrame = framePos
+    this.updateFrame(this.frames[this.currentFrame])
   }
 
   /**
    * Determines animation and can update frame
-   * @param {Number} frameCount Global frame counter
+   * @method animate
+   * @param {number} frameCount Global frame counter
    */
-  this.animate = function (frameCount) {
+  this.animate = function(frameCount) {
     if (frameCount % this.animSpeed === 0) {
-      this.currentFrame = (this.frames.length - 1 === this.currentFrame) ? 0 : ++this.currentFrame;
-      this.updateFrame(this.frames[this.currentFrame]);
+      this.currentFrame = (this.frames.length - 1 === this.currentFrame) ? 0 : ++this.currentFrame
+      this.updateFrame(this.frames[this.currentFrame])
     }
-  };
+  }
 
   /**
    * Makes canvas draw calls
+   * @method _draw
    * @param {TCCanvas} tinyCanvas Instance of tinyCanvass
    */
-  this._draw = function (tinyCanvas) {
-    tinyCanvas.push();
-    tinyCanvas.trans(this.posX, this.posY);
-    tinyCanvas.rot(this.rotation);
+  this._draw = function(tinyCanvas) {
+    tinyCanvas.push()
+    tinyCanvas.trans(this.posX, this.posY)
+    tinyCanvas.rot(this.rotation)
 
-    if (this.direction === 'l') tinyCanvas.scale(-1, 1);
-    else tinyCanvas.scale(1, 1);
+    if (this.direction === 'l') tinyCanvas.scale(-1, 1)
+    else tinyCanvas.scale(1, 1)
 
     tinyCanvas.img(
       // texture to render
@@ -179,13 +184,18 @@ function Sprite(x, y, texture, frames, startingFrame, animSpeed   ) {
       this.v0,
       this.u1,
       this.v1
-    );
+    )
 
-    tinyCanvas.pop();
-  };
+    tinyCanvas.pop()
+  }
 
 
-  this.updateFrame(frames[startingFrame]);
+  this.updateFrame(frames[startingFrame])
 }
 
-export default Sprite;
+export default Sprite
+
+/**
+ * A array consisting of x, y, width, height numbers in pixels
+ * @typedef {Array.<number>} Frame
+ */

@@ -19,7 +19,7 @@ module.exports = () => {
 
   gulp.task( 'build', [ 'build-min' ] );
 
-  gulp.task( 'build-full', () => {
+  gulp.task( 'build-full', ['lint'], () => {
     return rollup({
       entry: 'src/js/main.js', format: 'iife', sourceMap: true
     })
