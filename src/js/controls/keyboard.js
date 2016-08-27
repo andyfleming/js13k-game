@@ -6,11 +6,13 @@ export default function keyboard() {
   var keys = {}
 
   document.addEventListener('keydown', function(e) {
-    keys[e.key] = true
+    console.log(e.which + ' key DOWN')
+    keys[e.which] = true
   })
 
   document.addEventListener('keyup', function(e) {
-    keys[e.key] = false
+    //console.log(e.which + ' key UP')
+    keys[e.which] = false
   })
 
   return keys
