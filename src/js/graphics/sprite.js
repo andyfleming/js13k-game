@@ -49,10 +49,10 @@ function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
   this.rotation = 0
 
   /**
-   * Direction, either 'l' or 'r'
-   * @type {String}
+   * Flipped (used for direction)
+   * @type {Boolean}
    */
-  this.direction = 'r'
+  this.flipped = false
 
   /**
    * Game frames per animation frame
@@ -148,16 +148,9 @@ function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
     tinyCanvas.trans(this.posX, this.posY)
     tinyCanvas.rot(this.rotation)
 
-    var startX
-    var endX
-
-    if (this.direction === 'l') {
-      startX = this.u1
-      endX = this.u0
-    } else {
-      startX = this.u0
-      endX = this.u1
-    }
+    // Set horizontal start and endpoints according to flipped status
+    var startX = (this.flipped) ? this.u1 : this.u0
+    var endX = (this.flipped) ? this.u0 : this.u1
 
     tinyCanvas.img(
       // texture to render
