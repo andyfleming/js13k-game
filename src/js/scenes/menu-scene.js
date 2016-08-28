@@ -1,3 +1,5 @@
+import Sprite from '../graphics/sprite'
+
 export default function MenuScene(app) {
 
   const self = this
@@ -28,18 +30,31 @@ export default function MenuScene(app) {
     ]).catch(function(err) { console.error(err) })
   }
 
+  var playerSp
+
   self.create = function() {
     console.log('creating scene')
+    playerSp = new Sprite(100, 100, PlayerTexture, [
+      [0, 0, 16, 20],
+      [16, 0, 16, 20],
+      [32, 0, 16, 20],
+      [48, 0, 16, 20],
+      [64, 0, 16, 20]
+    ], 1, 4)
+
+    app.canvas.bkg(0.227, 0.227, 0.227)
   }
 
   // create
   // update
   self.update = function() {
-    console.log('updating menu scene')
+    //console.log('updating menu scene')
   }
 
   // draw
   self.draw = function() {
-    console.log('drawing menu scene')
+    //console.log('drawing menu scene')
+    playerSp._draw(app.canvas)
+
   }
 }

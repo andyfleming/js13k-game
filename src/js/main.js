@@ -32,7 +32,9 @@ function App() {
   self.runMainLoop = function() {
     requestAnimationFrame(self.runMainLoop)
     self.currentScene.update()
+    self.canvas.cls()
     self.currentScene.draw()
+    self.canvas.flush()
   }
 
   // -------------------------------------------------
