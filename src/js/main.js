@@ -3,6 +3,7 @@ import KeyboardController from './controls/keyboard-controller'
 import FxController from './sound/fx-controller'
 import MusicController from './sound/music-controller'
 import MenuScene from './scenes/menu-scene'
+import GameScene from './scenes/game-scene'
 import CONFIG from './config/config'
 
 
@@ -21,7 +22,7 @@ function App() {
 
   self.scenes = {
     menu: new MenuScene(self),
-    //game: new GameScene(self)
+    game: new GameScene(self)
   }
 
   self.goToScene = function(name) {
@@ -51,15 +52,16 @@ function App() {
   }
 
   // Set up keyboard input
-  self.keys = new KeyboardController()
+  const keyboardController = new KeyboardController()
+  self.keys = keyboardController.keys
 
   // Create tiny canvas instance from canvas el
   self.canvas = TC(document.getElementById('c'))
 
   // loop through scenes and load
   Promise.all([
-    self.scenes.menu.load()
-    //self.scenes.game.load()
+    self.scenes.menu.load(),
+    self.scenes.game.load()
   ]).then(function() {
     self.goToScene('menu')
     self.runMainLoop()
