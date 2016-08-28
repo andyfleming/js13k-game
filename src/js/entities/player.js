@@ -49,8 +49,6 @@ export default function Player(texture) {
       self.sprite.posY = 263
     }
 
-    console.log(speedX)
-
   }
 
   self.draw = function(app) {
