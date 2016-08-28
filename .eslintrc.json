@@ -14,10 +14,16 @@
     "no-new": 0,
     "no-multiple-empty-lines": ["error", {"max": 2}],
     "no-multi-spaces": ["off"],
-    "no-unused-vars": ["warn", {"varsIgnorePattern": "ignore[A-Z]"}]
+    "no-unused-vars": ["warn", {"varsIgnorePattern": "ignore[A-Z]"}],
+    "new-cap": 1,
+    "no-sparse-arrays": 0,
+    "no-trailing-spaces": 1,
+    "semi": 1
   },
   "globals": {
     "TC": false,
-    "TCTex": false
+    "TCTex": false,
+    "TinyMusic": false,
+    "webkitAudioContext": false
   }
 }
