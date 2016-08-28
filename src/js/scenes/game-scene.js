@@ -1,11 +1,16 @@
 import Sprite from '../graphics/sprite'
+import Player from '../entities/player'
 
 export default function GameScene(app) {
 
   var self = this
 
+  // entities
+  var player
+
+  // Images and textures
   var PlayerImage = new Image()
-  var PlayerTexture = null
+  var playerTexture = null
   var EnemyImage = new Image()
   var EnemyTexture = null
 
@@ -16,7 +21,7 @@ export default function GameScene(app) {
       new Promise(function(resolve) {
         PlayerImage.src    = 'person_cut_tiny.png'
         PlayerImage.onload = function() {
-          PlayerTexture = TCTex(app.canvas.g, PlayerImage, PlayerImage.width, PlayerImage.height)
+          playerTexture = TCTex(app.canvas.g, PlayerImage, PlayerImage.width, PlayerImage.height)
           resolve()
         }
       }),
@@ -30,18 +35,20 @@ export default function GameScene(app) {
     ]).catch(function(err) { console.error(err) })
   }
 
-  var enemySp
-
   self.create = function() {
     console.log('creating scene')
-    enemySp = new Sprite(200, 110, EnemyTexture, [
-      [0, 0, 16, 20],
-      [16, 0, 16, 20],
-      [32, 0, 16, 20],
-      [48, 0, 16, 20]
-    ], 1, 4)
 
     app.canvas.bkg(0.227, 0.227, 0.227)
+
+
+
+    player = new Player(playerTexture)
+
+
+
+
+
+    // Music
     app.sound.music.playSong1()
 
     var count = 10
@@ -62,12 +69,24 @@ export default function GameScene(app) {
   // update
   self.update = function() {
     //console.log('updating menu scene')
+
+    player.update(app, self)
+    // enemy update()
+    // projectile.update()
+    // foreground.update()
+
+    // player projectiles colliding with enemies
+    // player projectiles with wall
+    // enemy projectiles colliding with player
+    // enemy projectiles with wall
+    // player colliding with enemies
+
   }
 
   // draw
   self.draw = function() {
     //console.log('drawing menu scene')
-    enemySp._draw(app.canvas)
+    player.draw(app)
   }
 
 }
