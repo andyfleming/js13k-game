@@ -31,12 +31,15 @@ export default function Player(texture) {
 
     } else {
 
-      // TODO: add if on ground, speed *= 0.8
-      if (Math.abs(speedX) < 1) {
-        speedX = 0
-      } else {
-        speedX *= 0.95
-      }
+      // If on the ground and not holding left or right, set speed to 0
+      speedX = 0
+
+      //// TODO: add if on ground, speed *= 0.8
+      //if (Math.abs(speedX) < 1) {
+      //  speedX = 0
+      //} else {
+      //  speedX *= 0.95
+      //}
 
     }
 
