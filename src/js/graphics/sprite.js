@@ -113,18 +113,6 @@ function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
      * @type {[type]}
      */
     this.v1 = this.v0 + (newFrame[3] / texture.height)
-
-    /**
-     * Half of the Frame's width
-     * @type {number}
-     */
-    this.halfWidth = newFrame[2] / 2
-
-    /**
-     * Half of the Frame's height
-     * @type {number}
-     */
-    this.halfHeight = newFrame[3] / 2
   }
 
   /**
@@ -160,15 +148,23 @@ function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
     tinyCanvas.trans(this.posX, this.posY)
     tinyCanvas.rot(this.rotation)
 
-    if (this.direction === 'l') tinyCanvas.scale(-1, 1)
-    else tinyCanvas.scale(1, 1)
+    var startX
+    var endX
+
+    if (this.direction === 'l') {
+      startX = this.u1
+      endX = this.u0
+    } else {
+      startX = this.u0
+      endX = this.u1
+    }
 
     tinyCanvas.img(
       // texture to render
       this.texture,
 
       // x origin
-      -this.halfWidth,
+      0,
 
       // y origin
       0,
@@ -180,9 +176,9 @@ function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
       this.height,
 
       // no idea
-      this.u0,
+      startX,
       this.v0,
-      this.u1,
+      endX,
       this.v1
     )
 
