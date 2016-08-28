@@ -38,8 +38,7 @@ export default function GameScene(app) {
   self.create = function() {
     console.log('creating scene')
 
-    app.canvas.bkg(0.227, 0.227, 0.227)
-
+    app.canvas.bkg(0.133, 0.125, 0.204)
 
 
     player = new Player(playerTexture)

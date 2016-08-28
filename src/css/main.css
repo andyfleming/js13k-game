@@ -1,10 +1,11 @@
 body {
-    font-family: Verdana, Arial;
+    font-family: Verdana, Arial, sans-serif;
     font-size: 10px;
     height: 540px;
+    background: #1e1c31;
 }
 canvas{
-    border: 3px solid black;
+    border: 2px solid #131223;
     padding: 0;
     margin: auto;
     display: block;
