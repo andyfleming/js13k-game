@@ -35,7 +35,9 @@ function App() {
     self.currentScene.draw()
   }
 
-  // Initialize app
+  // -------------------------------------------------
+  // INITIALIZE APP
+  // -------------------------------------------------
 
   // Import config
   self.config = CONFIG
