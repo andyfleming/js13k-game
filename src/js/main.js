@@ -6,16 +6,6 @@ import MenuScene from './scenes/menu-scene'
 import GameScene from './scenes/game-scene'
 import CONFIG from './config/config'
 
-
-// App
-// manages:
-// - sound
-// -- fx
-// -- music
-// - animation/draw/update
-// - keyboard/input
-// - canvas + TC
-
 function App() {
 
   const self = this
@@ -70,8 +60,3 @@ function App() {
 }
 
 new App()
-
-// Scene
-// - pausing
-// .start()
-// .end()
