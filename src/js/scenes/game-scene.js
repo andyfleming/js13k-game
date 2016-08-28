@@ -12,6 +12,11 @@ export default function GameScene(app) {
   var groundImage = new Image()
   var groundTexture
   var groundSprite
+  var platformImage = new Image()
+  var platformTexture
+  var platform1Sprite
+  var platform2Sprite
+  //var platform3Sprite
   var playerImage = new Image()
   var playerTexture
   var enemyImage = new Image()
@@ -21,6 +26,13 @@ export default function GameScene(app) {
   self.load = function() {
 
     return Promise.all([
+      new Promise(function(resolve) {
+        platformImage.src    = 'platform_exp_1_tiny.png'
+        platformImage.onload = function() {
+          platformTexture = TCTex(app.canvas.g, platformImage, platformImage.width, platformImage.height)
+          resolve()
+        }
+      }),
       new Promise(function(resolve) {
         groundImage.src    = 'ground_tiny.png'
         groundImage.onload = function() {
@@ -50,7 +62,12 @@ export default function GameScene(app) {
 
     app.canvas.bkg(0.133, 0.125, 0.204)
 
+    // World sprites
     groundSprite = new Sprite(0, 283, groundTexture, [[0, 0, 700, 17]], 0, 1)
+    platform1Sprite = new Sprite(100, 200, platformTexture, [[0, 0, 132, 9]], 0, 1)
+    platform2Sprite = new Sprite(468, 200, platformTexture, [[0, 0, 132, 9]], 0, 1)
+    //platform3Sprite = new Sprite(284, 125, platformTexture, [[0, 0, 132, 9]], 0, 1)
+
 
     player = new Player(playerTexture)
 
@@ -97,8 +114,22 @@ export default function GameScene(app) {
   self.draw = function() {
     //console.log('drawing menu scene')
 
+    // World draws
     groundSprite._draw(app.canvas)
+    platform1Sprite._draw(app.canvas)
+    platform2Sprite._draw(app.canvas)
+    //platform3Sprite._draw(app.canvas)
+    // Platform 3 (upper) is disabled since I don't think the player will be vulnerable enough on the ground otherwise
+
+    // Player draw
     player.draw(app)
+
+    // TODO: enemy draws
+
+    // TODO: projectile draws
+
+    // TODO: other draws; particles?
+
   }
 
 }
