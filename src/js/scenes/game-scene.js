@@ -1,5 +1,5 @@
-import Sprite from '../graphics/sprite'
 import Player from '../entities/player'
+import Sprite from '../graphics/sprite'
 
 export default function GameScene(app) {
 
@@ -9,26 +9,36 @@ export default function GameScene(app) {
   var player
 
   // Images and textures
-  var PlayerImage = new Image()
-  var playerTexture = null
-  var EnemyImage = new Image()
-  var EnemyTexture = null
+  var groundImage = new Image()
+  var groundTexture
+  var groundSprite
+  var playerImage = new Image()
+  var playerTexture
+  var enemyImage = new Image()
+  var enemyTexture
 
   // load
   self.load = function() {
 
     return Promise.all([
       new Promise(function(resolve) {
-        PlayerImage.src    = 'person_cut_tiny.png'
-        PlayerImage.onload = function() {
-          playerTexture = TCTex(app.canvas.g, PlayerImage, PlayerImage.width, PlayerImage.height)
+        groundImage.src    = 'ground_tiny.png'
+        groundImage.onload = function() {
+          groundTexture = TCTex(app.canvas.g, groundImage, groundImage.width, groundImage.height)
           resolve()
         }
       }),
       new Promise(function(resolve) {
-        EnemyImage.src = 'enemy1.png'
-        EnemyImage.onload = function() {
-          EnemyTexture = TCTex(app.canvas.g, EnemyImage, EnemyImage.width, EnemyImage.height)
+        playerImage.src    = 'person_cut_tiny.png'
+        playerImage.onload = function() {
+          playerTexture = TCTex(app.canvas.g, playerImage, playerImage.width, playerImage.height)
+          resolve()
+        }
+      }),
+      new Promise(function(resolve) {
+        enemyImage.src = 'enemy1.png'
+        enemyImage.onload = function() {
+          enemyTexture = TCTex(app.canvas.g, enemyImage, enemyImage.width, enemyImage.height)
           resolve()
         }
       })
@@ -40,6 +50,7 @@ export default function GameScene(app) {
 
     app.canvas.bkg(0.133, 0.125, 0.204)
 
+    groundSprite = new Sprite(0, 283, groundTexture, [[0, 0, 700, 17]], 0, 1)
 
     player = new Player(playerTexture)
 
@@ -85,6 +96,8 @@ export default function GameScene(app) {
   // draw
   self.draw = function() {
     //console.log('drawing menu scene')
+
+    groundSprite._draw(app.canvas)
     player.draw(app)
   }
 
