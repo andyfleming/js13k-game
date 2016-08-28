@@ -2,7 +2,8 @@ body {
     font-family: Verdana, Arial, sans-serif;
     font-size: 10px;
     height: 540px;
-    background: #1e1c31;
+    /*background: #1e1c31;*/
+    background: #28282d;
 }
 canvas{
     border: 2px solid #131223;
