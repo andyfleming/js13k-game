@@ -15,5 +15,9 @@
     "no-multiple-empty-lines": ["error", {"max": 2}],
     "no-multi-spaces": ["off"],
     "no-unused-vars": ["warn", {"varsIgnorePattern": "ignore[A-Z]"}]
+  },
+  "globals": {
+    "TC": false,
+    "TCTex": false
   }
 }
