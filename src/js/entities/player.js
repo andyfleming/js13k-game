@@ -6,6 +6,7 @@ export default function Player(texture) {
   var self = this
 
   // Initial state
+  var facingUp = false
   var speedX = 0
   var speedY = 0
 
@@ -20,6 +21,8 @@ export default function Player(texture) {
   ], 1, 4)
 
   self.update = function(app, scene) {
+
+    facingUp = (app.keys[CONFIG.KEY.FACE_UP])
 
     if (app.keys[CONFIG.KEY.MOVE_LEFT]) {
       self.sprite.flipped = true
