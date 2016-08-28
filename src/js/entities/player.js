@@ -45,8 +45,8 @@ export default function Player(texture) {
 
     speedY += CONFIG.WORLD.GRAVITY
 
-    if (self.sprite.posY >= 250) {
-      self.sprite.posY = 250
+    if (self.sprite.posY >= 263) {
+      self.sprite.posY = 263
     }
 
     console.log(speedX)
