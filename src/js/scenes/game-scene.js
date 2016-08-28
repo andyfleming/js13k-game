@@ -42,6 +42,20 @@ export default function GameScene(app) {
     ], 1, 4)
 
     app.canvas.bkg(0.227, 0.227, 0.227)
+    app.sound.music.playSong1()
+
+    var count = 10
+    var interval
+
+    interval = setInterval(function() {
+      count--
+
+      app.sound.fx.playSound1()
+
+      if (count === 0) {
+        clearInterval(interval)
+      }
+    }, 300)
   }
 
   // create
