@@ -53,7 +53,7 @@ function App() {
     self.scenes.menu.load(),
     self.scenes.game.load()
   ]).then(function() {
-    self.goToScene('menu')
+    self.goToScene('game')
     self.runMainLoop()
   }).catch(function(err) { console.error(err) })
 
