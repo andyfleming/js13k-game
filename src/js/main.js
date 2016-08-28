@@ -55,7 +55,7 @@ function App() {
   ]).then(function() {
     self.goToScene('game')
     self.runMainLoop()
-  }).catch(function(err) { console.error(err) })
+  })
 
 }
 
