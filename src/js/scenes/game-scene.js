@@ -22,39 +22,23 @@ export default function GameScene(app) {
   var enemyImage = new Image()
   var enemyTexture
 
+  function loadImage(src, image) {
+    return new Promise(function(resolve) {
+      image.src    = src
+      image.onload = function() {
+        resolve(TCTex(app.canvas.g, image, image.width, image.height))
+      }
+    })
+  }
+
   // load
   self.load = function() {
-
     return Promise.all([
-      new Promise(function(resolve) {
-        platformImage.src    = 'platform_exp_1_tiny.png'
-        platformImage.onload = function() {
-          platformTexture = TCTex(app.canvas.g, platformImage, platformImage.width, platformImage.height)
-          resolve()
-        }
-      }),
-      new Promise(function(resolve) {
-        groundImage.src    = 'ground_tiny.png'
-        groundImage.onload = function() {
-          groundTexture = TCTex(app.canvas.g, groundImage, groundImage.width, groundImage.height)
-          resolve()
-        }
-      }),
-      new Promise(function(resolve) {
-        playerImage.src    = 'person_cut_tiny.png'
-        playerImage.onload = function() {
-          playerTexture = TCTex(app.canvas.g, playerImage, playerImage.width, playerImage.height)
-          resolve()
-        }
-      }),
-      new Promise(function(resolve) {
-        enemyImage.src = 'enemy1.png'
-        enemyImage.onload = function() {
-          enemyTexture = TCTex(app.canvas.g, enemyImage, enemyImage.width, enemyImage.height)
-          resolve()
-        }
-      })
-    ]).catch(function(err) { console.error(err) })
+      loadImage('platform_exp_1_tiny.png', platformImage).then(function(t) { platformTexture = t }),
+      loadImage('ground_tiny.png', groundImage).then(function(t) { groundTexture = t }),
+      loadImage('person_cut_tiny.png', playerImage).then(function(t) { playerTexture = t }),
+      loadImage('enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
+    ])
   }
 
   self.create = function() {
