@@ -6,6 +6,7 @@ export default function Player(texture) {
   var self = this
 
   // Initial state
+  var lastXDirection = 'r' // can be "l" or "r"; important for strafing while facing up
   var facingUp = false
   var speedX = 0
   var speedY = 0
@@ -25,6 +26,7 @@ export default function Player(texture) {
     facingUp = (app.keys[CONFIG.KEY.FACE_UP])
 
     if (app.keys[CONFIG.KEY.MOVE_LEFT]) {
+      lastXDirection = 'l'
       self.sprite.flipped = true
 
       // If the player is going the opposite direction, stop them, so they can flip around immediately (game feel)
@@ -35,6 +37,7 @@ export default function Player(texture) {
       speedX = Math.max(speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX)
 
     } else if (app.keys[CONFIG.KEY.MOVE_RIGHT]) {
+      lastXDirection = 'r'
       self.sprite.flipped = false
 
       // If the player is going the opposite direction, stop them, so they can flip around immediately (game feel)
