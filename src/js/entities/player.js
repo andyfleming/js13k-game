@@ -5,6 +5,7 @@ export default function Player(texture) {
 
   var self = this
 
+  // Initial state
   var speedX = 0
   var speedY = 0
 
@@ -21,12 +22,23 @@ export default function Player(texture) {
   self.update = function(app, scene) {
 
     if (app.keys[CONFIG.KEY.MOVE_LEFT]) {
-      self.sprite.direction = 'l'
+      self.sprite.flipped = true
+
+      // If the player is going the opposite direction, stop them, so they can flip around immediately (game feel)
+      if (speedX > 0) {
+        speedX = 0
+      }
 
       speedX = Math.max(speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX)
 
     } else if (app.keys[CONFIG.KEY.MOVE_RIGHT]) {
-      self.sprite.direction = 'r'
+      self.sprite.flipped = false
+
+      // If the player is going the opposite direction, stop them, so they can flip around immediately (game feel)
+      if (speedX < 0) {
+        speedX = 0
+      }
+
       speedX = Math.min(speedX + CONFIG.MOVEMENT.WALK_SPEED, CONFIG.MOVEMENT.WALK_SPEED_MAX)
 
     } else {
