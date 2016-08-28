@@ -3,7 +3,7 @@
  */
 export default function KeyboardController() {
 
-  const self = this
+  var self = this
 
   self.keys = {}
 

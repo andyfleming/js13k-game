@@ -2,7 +2,7 @@ import Sprite from '../graphics/sprite'
 
 export default function GameScene(app) {
 
-  const self = this
+  var self = this
 
   var PlayerImage = new Image()
   var PlayerTexture = null

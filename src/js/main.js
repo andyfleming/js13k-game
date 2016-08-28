@@ -8,7 +8,7 @@ import CONFIG from './config/config'
 
 function App() {
 
-  const self = this
+  var self = this
 
   self.scenes = {
     menu: new MenuScene(self),
@@ -42,7 +42,7 @@ function App() {
   }
 
   // Set up keyboard input
-  const keyboardController = new KeyboardController()
+  var keyboardController = new KeyboardController()
   self.keys = keyboardController.keys
 
   // Create tiny canvas instance from canvas el
