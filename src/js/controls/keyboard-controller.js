@@ -8,7 +8,7 @@ export default function KeyboardController() {
   self.keys = {}
 
   document.addEventListener('keydown', function(e) {
-    console.log(e.which + ' key DOWN')
+    //console.log(e.which + ' key DOWN')
     self.keys[e.which] = true
   })
 
