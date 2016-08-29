@@ -15,6 +15,7 @@ export default function Player(texture) {
   var doubleJumpReady = false
   var doubleJumpUsed = true // This starts as true since we spawn the player in the air
   var onGround = false // this starts as false since we spawn the player in the air
+  var onWall = false // Not used yet, but intention is to use to select wall-sliding sprite frame
   var jumpFramesLeft = 0
 
   // origin, speed, frames, startingFrame, animSpeed
@@ -111,6 +112,17 @@ export default function Player(texture) {
       // NOTE: explicitly not limiting the speed (no terminal velocity) since for our game size we can keep it simple
       speedY += CONFIG.WORLD.GRAVITY
 
+      // Optional: allow wall stickiness
+      if (self.sprite.posX === 0 || self.sprite.posX === 700 - 16) {
+        onWall = true
+        speedY = Math.min(speedY, CONFIG.MOVEMENT.WALL_FALL_SPEED)
+      }
+
+    }
+
+    // If the played is not touching the wall or on the ground, they are no longer wall sliding
+    if ((self.sprite.posX !== 0 && self.sprite.posX !== 700 - 16) || onGround) {
+      onWall = false
     }
 
     // NOTE: world interactions / bounds / clamping happens here in a manual way

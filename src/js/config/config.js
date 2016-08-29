@@ -15,7 +15,8 @@ export default {
     JUMP_SPEED: 6,
     JUMP_LENGTH: 5,
     WALK_SPEED: 1,
-    WALK_SPEED_MAX: 4
+    WALK_SPEED_MAX: 4,
+    WALL_FALL_SPEED: 1.5
   },
 
   WORLD: {
