@@ -8,6 +8,7 @@ export default function Player(texture) {
   // Initial state
   var lastXDirection = 'r' // can be "l" or "r"; important for strafing while facing up
   var facingUp = false
+  var walking = false
   var speedX = 0
   var speedY = 0
   var jumping = false
@@ -28,7 +29,11 @@ export default function Player(texture) {
 
   self.update = function(app, scene) {
 
+    // If the player is holding the "up" key (w), they are "facing up" (for shooting upwards)
     facingUp = (app.keys[CONFIG.KEY.FACE_UP])
+
+    // If the player is on the ground and pressing left or right they are "walking" / strafing
+    walking = (onGround && (app.keys[CONFIG.KEY.MOVE_LEFT] || app.keys[CONFIG.KEY.MOVE_RIGHT]))
 
     if (app.keys[CONFIG.KEY.MOVE_LEFT]) {
       lastXDirection = 'l'
@@ -123,6 +128,10 @@ export default function Player(texture) {
   }
 
   self.draw = function(app) {
+
+    if (walking) {
+      // TODO: animate sprite for walking?
+    }
 
     self.sprite._draw(app.canvas)
 
