@@ -82,7 +82,7 @@ export default function Player(texture) {
 
       } else if (!jumping) {
 
-        // If not already jumping, set jumping true, and set jump time left
+        // If not already jumping, jump!
         onGround = false
         jumping = true
         jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
