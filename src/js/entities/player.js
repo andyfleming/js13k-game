@@ -113,8 +113,54 @@ export default function Player(texture) {
 
     }
 
-    self.sprite.posX += speedX
-    self.sprite.posY += speedY
+    // NOTE: world interactions / bounds / clamping happens here in a manual way
+    // This works independently of normal collisions
+
+    // Check if in the range of the platforms (horizontally)
+    // NOTE: the + 16 is accounting for the sprite width
+    var inRangeOfPlatform1 = (self.sprite.posX + 16 >= 100 && self.sprite.posX <= 232)
+    var inRangeOfPlatform2 = (self.sprite.posX + 16 >= 468 && self.sprite.posX <= 600)
+
+    // If so...
+    if (inRangeOfPlatform1 || inRangeOfPlatform2) {
+
+      if (self.sprite.posY < 180 + 20 && speedY > 0 && (self.sprite.posY + speedY >= 180)) {
+
+        // If above the platform, moving downward, and past the platform, limit to platform top (and mark as on ground)
+        self.sprite.posY = 180
+        onGround = true
+
+      } else if (self.sprite.posY > 189 && speedY < 0 && (self.sprite.posY + speedY <= 205)) {
+
+        // If below the platform and moving upward, limit movement upwards to bottom of platform
+        self.sprite.posY = 205
+
+        // If we hit the bottom of a platform, cancel the current jump
+        jumpFramesLeft = 0
+        speedY = 0
+
+       } else {
+        // Otherwise, apply the speed as normal
+        self.sprite.posY += speedY
+      }
+
+
+
+    } else {
+
+      // Otherwise, apply the speed as normal
+      self.sprite.posY += speedY
+
+    }
+
+
+
+
+    // Apply the horizontal movement (but limit to canvas width)
+    self.sprite.posX = Math.max(Math.min(self.sprite.posX + speedX, 700 - 16), 0)
+
+    // In case we need it: limit player to top of the canvas
+    //self.sprite.posY = Math.max(self.sprite.posY, 0)
 
     // Handle the bounds for the ground
     if (self.sprite.posY >= 263) {
