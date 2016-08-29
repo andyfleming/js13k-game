@@ -1,11 +1,13 @@
 /**
  * @class Sprite
+ * 
  * @param {number} x            Starting X position
  * @param {number} y            Starting Y position
  * @param {TCTexture} texture   Tiny-Canvas Texture object
  * @param {Frame[]} frames Array of arrays of frame position data [x, y, width, height]
  * @param {number} startingFrame Animation frame to start on
  * @param {number}  animSpeed    Game frames per animation frame
+ *
  * @return {Sprite}
  */
 function Sprite(x, y, texture, frames, startingFrame, animSpeed) {
