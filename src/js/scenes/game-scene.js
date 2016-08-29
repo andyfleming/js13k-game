@@ -76,10 +76,8 @@ export default function GameScene(app) {
     }, 300)
   }
 
-  // create
-  // update
   self.update = function() {
-    //console.log('updating menu scene')
+    //console.log('updating game scene')
 
     player.update(app, self)
     // enemy update()
@@ -94,7 +92,6 @@ export default function GameScene(app) {
 
   }
 
-  // draw
   self.draw = function() {
     //console.log('drawing menu scene')
 

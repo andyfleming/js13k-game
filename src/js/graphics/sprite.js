@@ -1,6 +1,6 @@
 /**
  * @class Sprite
- * 
+ *
  * @param {number} x            Starting X position
  * @param {number} y            Starting Y position
  * @param {TCTexture} texture   Tiny-Canvas Texture object

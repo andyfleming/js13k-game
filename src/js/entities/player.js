@@ -10,6 +10,11 @@ export default function Player(texture) {
   var facingUp = false
   var speedX = 0
   var speedY = 0
+  var jumping = false
+  var doubleJumpReady = false
+  var doubleJumpUsed = true // This starts as true since we spawn the player in the air
+  var onGround = false // this starts as false since we spawn the player in the air
+  var jumpFramesLeft = 0
 
   // origin, speed, frames, startingFrame, animSpeed
 
@@ -61,13 +66,58 @@ export default function Player(texture) {
 
     }
 
+    // Jumping controls
+    if (app.keys[CONFIG.KEY.JUMP]) {
+
+      // If user is already jumping, check if the have a 2nd jump available, if so double jump!
+      if (jumping && !doubleJumpUsed && doubleJumpReady) {
+        jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
+        doubleJumpUsed = true
+        doubleJumpReady = false
+
+      } else if (!jumping) {
+
+        // If not already jumping, set jumping true, and set jump time left
+        onGround = false
+        jumping = true
+        jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
+
+      }
+
+    } else {
+
+      // If the user is jumping but hasn't jumped a 2nd time,
+      // they can now press the jump key again to use their 2nd jump
+      if (jumping && !doubleJumpUsed) {
+        doubleJumpReady = true
+      }
+
+    }
+
+    // Jumping movement
+    if (jumping && jumpFramesLeft > 0) {
+      // TODO: consider deceleration for jump speed
+      speedY = -CONFIG.MOVEMENT.JUMP_SPEED
+      jumpFramesLeft--
+
+    } else if (!onGround) {
+      speedY += CONFIG.WORLD.GRAVITY
+    }
+
     self.sprite.posX += speedX
     self.sprite.posY += speedY
 
-    speedY += CONFIG.WORLD.GRAVITY
-
+    // Handle the bounds for the ground
     if (self.sprite.posY >= 263) {
       self.sprite.posY = 263
+      onGround = true
+    }
+
+    // If the player is on the ground, reset the jumping state
+    if (onGround) {
+      jumping = false
+      doubleJumpUsed = false
+      doubleJumpReady = false
     }
 
   }

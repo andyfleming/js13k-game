@@ -12,8 +12,8 @@ export default {
   },
 
   MOVEMENT: {
-    JUMP_SPEED: 8,
-    JUMPS_ALLOWED: 2,
+    JUMP_SPEED: 6,
+    JUMP_LENGTH: 5,
     WALK_SPEED: 1,
     WALK_SPEED_MAX: 4
   },
