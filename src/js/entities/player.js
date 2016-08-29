@@ -106,7 +106,11 @@ export default function Player(texture) {
       jumpFramesLeft--
 
     } else if (!onGround) {
+
+      // If the player is not jumping and not on the ground, increase their speed towards the ground with "gravity"
+      // NOTE: explicitly not limiting the speed (no terminal velocity) since for our game size we can keep it simple
       speedY += CONFIG.WORLD.GRAVITY
+
     }
 
     self.sprite.posX += speedX
