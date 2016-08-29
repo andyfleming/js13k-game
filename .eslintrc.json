@@ -18,7 +18,8 @@
     "new-cap": 1,
     "no-sparse-arrays": 0,
     "no-trailing-spaces": 1,
-    "semi": 1
+    "semi": 1,
+    "indent": 1
   },
   "globals": {
     "TC": false,
