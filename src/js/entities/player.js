@@ -9,6 +9,7 @@ export default function Player(texture) {
   var lastXDirection = 'r' // can be "l" or "r"; important for strafing while facing up
   var facingUp = false
   var walking = false
+  var dashing = false
   var speedX = 0
   var speedY = 0
   var jumping = false
@@ -36,6 +37,14 @@ export default function Player(texture) {
     // If the player is on the ground and pressing left or right they are "walking" / strafing
     walking = (onGround && (app.keys[CONFIG.KEY.MOVE_LEFT] || app.keys[CONFIG.KEY.MOVE_RIGHT]))
 
+    // Dashing
+    // TODO: handle special draining
+    if (app.keys[CONFIG.KEY.DASH]) {
+      dashing = true
+    } else {
+      dashing = false
+    }
+
     if (app.keys[CONFIG.KEY.MOVE_LEFT]) {
       lastXDirection = 'l'
       self.sprite.flipped = true
@@ -45,7 +54,11 @@ export default function Player(texture) {
         speedX = 0
       }
 
-      speedX = Math.max(speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX)
+      if (dashing) {
+        speedX = -CONFIG.MOVEMENT.DASH_SPEED
+      } else {
+        speedX = Math.max(speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX)
+      }
 
     } else if (app.keys[CONFIG.KEY.MOVE_RIGHT]) {
       lastXDirection = 'r'
@@ -56,7 +69,11 @@ export default function Player(texture) {
         speedX = 0
       }
 
-      speedX = Math.min(speedX + CONFIG.MOVEMENT.WALK_SPEED, CONFIG.MOVEMENT.WALK_SPEED_MAX)
+      if (dashing) {
+        speedX = CONFIG.MOVEMENT.DASH_SPEED
+      } else {
+        speedX = Math.min(speedX + CONFIG.MOVEMENT.WALK_SPEED, CONFIG.MOVEMENT.WALK_SPEED_MAX)
+      }
 
     } else {
 

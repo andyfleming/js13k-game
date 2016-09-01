@@ -7,6 +7,7 @@ export default {
     MOVE_LEFT: 65, // a
     MOVE_RIGHT: 68, // d
     JUMP: 32, // space
+    DASH: 74, // j
     TIMEWARP: 16, // shift
     DEV_K: 75 // k
   },
@@ -16,6 +17,7 @@ export default {
     JUMP_LENGTH: 5,
     WALK_SPEED: 1,
     WALK_SPEED_MAX: 4,
+    DASH_SPEED: 10,
     WALL_FALL_SPEED: 1.5
   },
 
