@@ -1,13 +1,21 @@
 export default {
 
+  // Key codes:
+  // Space: 32
+  // a: 65
+  // d: 68
+  // i: 73
+  // j: 74
+  // k: 75
+
   KEY: {
     //MOVE_LEFT: 'ArrowLeft',
     //MOVE_RIGHT: 'ArrowRight',
     //JUMP: 'ArrowUp'
     MOVE_LEFT: 65, // a
     MOVE_RIGHT: 68, // d
-    JUMP: 32, // space
-    SHOOT: 74, // j
+    JUMP: 74, // space
+    SHOOT: 73, // j
     DASH: 75, // k
     TIMEWARP: 16 // shift
   },
