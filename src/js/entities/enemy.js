@@ -1,59 +1,32 @@
-
 import Sprite from '../graphics/sprite'
-import U from '../utils'
+import CONFIG from '../config/config'
 
-var ENEMY_COUNT = 0
+export default function Enemy(texture, startingX) {
 
-/**
- * @class Enemy
- */
-function Enemy(origin, speed, texture, frames, startingFrame, animSpeed) {
-  this.texture = texture
-  this.frames = frames
-  this.startingFrame = startingFrame
-  this.animSpeed = animSpeed
-  this.id = ENEMY_COUNT++
-  this.active = true
+  var self = this
 
-  this.sprite = new Sprite(origin[0], origin[1], texture, this.frames, this.startingFrame, this.animSpeed)
-  this.sprite.speedX = speed[0]
-  this.sprite.speedY = speed[1]
+  // Initial state
+  var direction = 'l'
 
-  this.update = function(timewarp, world) {
-    timewarp = timewarp || 1
+  self.sprite = new Sprite(startingX, 263, texture, [
+    [0, 0, 16, 20],
+    [16, 0, 16, 20],
+    [32, 0, 16, 20],
+    [48, 0, 16, 20]
+  ], 1, 4)
 
-    this.sprite.posX += this.sprite.speedX * timewarp
-    this.sprite.posY += this.sprite.speedY * timewarp
-    this.sprite.speedY += world.GRAVITY * timewarp
+  self.update = function(app, scene) {
+    self.sprite.posX += (direction === 'l') ? -CONFIG.ENEMY.MOVE_SPEED : CONFIG.ENEMY.MOVE_SPEED
 
-    // clamp X bounds
-    if (this.sprite.posX > world.MAX_X) {
-      this.sprite.speedX *= -1
-      this.sprite.posX = world.MAX_X
-    } else if (this.sprite.posX < world.MIN_X) {
-      this.sprite.speedX *= -1
-      this.sprite.posX = world.MIN_X
+    if (self.sprite.posX <= 0) {
+      direction = 'r'
+    } else if (self.sprite.posX >= (700 - 16)) {
+      direction = 'l'
     }
-
-    // Y axis bounds
-    if (this.sprite.posY > world.MAX_Y) {
-      this.sprite.speedY *= -0.85
-      this.sprite.posY = world.MAX_Y
-      this.sprite.spin = (U.rand() - 0.5) * 0.2
-
-      if (U.rand() > 0.5) {
-        this.sprite.speedY -= U.rand() * 6
-      }
-    } else if (this.sprite.posY < world.MIN_Y) {
-      this.sprite.speedY = 0
-      this.sprite.posY = world.MIN_Y
-    }
-
   }
 
-  this.draw = function(tinyCanvas) {
-    this.sprite._draw(tinyCanvas)
+  self.draw = function(app) {
+    self.sprite._draw(app.canvas)
   }
+
 }
-
-export default Enemy
