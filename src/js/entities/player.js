@@ -6,9 +6,10 @@ export default function Player(texture) {
   var self = this
 
   // Initial state
-  var lastXDirection = 'r' // can be "l" or "r"; important for strafing while facing up
+  self.lastXDirection = 'r' // can be "l" or "r"; important for strafing while facing up
   var facingUp = false
   var walking = false
+  self.dashing = false
   var speedX = 0
   var speedY = 0
   var jumping = false
@@ -36,8 +37,16 @@ export default function Player(texture) {
     // If the player is on the ground and pressing left or right they are "walking" / strafing
     walking = (onGround && (app.keys[CONFIG.KEY.MOVE_LEFT] || app.keys[CONFIG.KEY.MOVE_RIGHT]))
 
+    // Dashing
+    if (app.keys[CONFIG.KEY.DASH]) {
+      self.dashing = true
+      // TODO: drain from special bar
+    } else {
+      self.dashing = false
+    }
+
     if (app.keys[CONFIG.KEY.MOVE_LEFT]) {
-      lastXDirection = 'l'
+      self.lastXDirection = 'l'
       self.sprite.flipped = true
 
       // If the player is going the opposite direction, stop them, so they can flip around immediately (game feel)
@@ -45,10 +54,14 @@ export default function Player(texture) {
         speedX = 0
       }
 
-      speedX = Math.max(speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX)
+      if (self.dashing) {
+        speedX = -CONFIG.PLAYER.DASH_SPEED
+      } else {
+        speedX = Math.max(speedX - CONFIG.PLAYER.WALK_SPEED, -CONFIG.PLAYER.WALK_SPEED_MAX)
+      }
 
     } else if (app.keys[CONFIG.KEY.MOVE_RIGHT]) {
-      lastXDirection = 'r'
+      self.lastXDirection = 'r'
       self.sprite.flipped = false
 
       // If the player is going the opposite direction, stop them, so they can flip around immediately (game feel)
@@ -56,7 +69,11 @@ export default function Player(texture) {
         speedX = 0
       }
 
-      speedX = Math.min(speedX + CONFIG.MOVEMENT.WALK_SPEED, CONFIG.MOVEMENT.WALK_SPEED_MAX)
+      if (self.dashing) {
+        speedX = CONFIG.PLAYER.DASH_SPEED
+      } else {
+        speedX = Math.min(speedX + CONFIG.PLAYER.WALK_SPEED, CONFIG.PLAYER.WALK_SPEED_MAX)
+      }
 
     } else {
 
@@ -77,7 +94,7 @@ export default function Player(texture) {
 
       // If user is already jumping, check if the have a 2nd jump available, if so double jump!
       if (jumping && !doubleJumpUsed && doubleJumpReady) {
-        jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
+        jumpFramesLeft = CONFIG.PLAYER.JUMP_LENGTH
         doubleJumpUsed = true
         doubleJumpReady = false
 
@@ -86,7 +103,7 @@ export default function Player(texture) {
         // If not already jumping, jump!
         onGround = false
         jumping = true
-        jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
+        jumpFramesLeft = CONFIG.PLAYER.JUMP_LENGTH
 
       }
 
@@ -103,7 +120,7 @@ export default function Player(texture) {
     // Jumping movement
     if (jumping && jumpFramesLeft > 0) {
       // TODO: consider deceleration for jump speed
-      speedY = -CONFIG.MOVEMENT.JUMP_SPEED
+      speedY = -CONFIG.PLAYER.JUMP_SPEED
       jumpFramesLeft--
 
     } else if (!onGround) {
@@ -115,7 +132,7 @@ export default function Player(texture) {
       // Optional: allow wall stickiness
       if (self.sprite.posX === 0 || self.sprite.posX === 700 - 16) {
         onWall = true
-        speedY = Math.min(speedY, CONFIG.MOVEMENT.WALL_FALL_SPEED)
+        speedY = Math.min(speedY, CONFIG.PLAYER.WALL_FALL_SPEED)
       }
 
     }

@@ -19,7 +19,8 @@
     "no-sparse-arrays": 0,
     "no-trailing-spaces": 1,
     "semi": 1,
-    "indent": 1
+    "indent": 1,
+    "space-infix-ops": 1
   },
   "globals": {
     "TC": false,
