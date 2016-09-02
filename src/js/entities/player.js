@@ -55,9 +55,9 @@ export default function Player(texture) {
       }
 
       if (dashing) {
-        speedX = -CONFIG.MOVEMENT.DASH_SPEED
+        speedX = -CONFIG.PLAYER.DASH_SPEED
       } else {
-        speedX = Math.max(speedX - CONFIG.MOVEMENT.WALK_SPEED, -CONFIG.MOVEMENT.WALK_SPEED_MAX)
+        speedX = Math.max(speedX - CONFIG.PLAYER.WALK_SPEED, -CONFIG.PLAYER.WALK_SPEED_MAX)
       }
 
     } else if (app.keys[CONFIG.KEY.MOVE_RIGHT]) {
@@ -70,9 +70,9 @@ export default function Player(texture) {
       }
 
       if (dashing) {
-        speedX = CONFIG.MOVEMENT.DASH_SPEED
+        speedX = CONFIG.PLAYER.DASH_SPEED
       } else {
-        speedX = Math.min(speedX + CONFIG.MOVEMENT.WALK_SPEED, CONFIG.MOVEMENT.WALK_SPEED_MAX)
+        speedX = Math.min(speedX + CONFIG.PLAYER.WALK_SPEED, CONFIG.PLAYER.WALK_SPEED_MAX)
       }
 
     } else {
@@ -94,7 +94,7 @@ export default function Player(texture) {
 
       // If user is already jumping, check if the have a 2nd jump available, if so double jump!
       if (jumping && !doubleJumpUsed && doubleJumpReady) {
-        jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
+        jumpFramesLeft = CONFIG.PLAYER.JUMP_LENGTH
         doubleJumpUsed = true
         doubleJumpReady = false
 
@@ -103,7 +103,7 @@ export default function Player(texture) {
         // If not already jumping, jump!
         onGround = false
         jumping = true
-        jumpFramesLeft = CONFIG.MOVEMENT.JUMP_LENGTH
+        jumpFramesLeft = CONFIG.PLAYER.JUMP_LENGTH
 
       }
 
@@ -120,7 +120,7 @@ export default function Player(texture) {
     // Jumping movement
     if (jumping && jumpFramesLeft > 0) {
       // TODO: consider deceleration for jump speed
-      speedY = -CONFIG.MOVEMENT.JUMP_SPEED
+      speedY = -CONFIG.PLAYER.JUMP_SPEED
       jumpFramesLeft--
 
     } else if (!onGround) {
@@ -132,7 +132,7 @@ export default function Player(texture) {
       // Optional: allow wall stickiness
       if (self.sprite.posX === 0 || self.sprite.posX === 700 - 16) {
         onWall = true
-        speedY = Math.min(speedY, CONFIG.MOVEMENT.WALL_FALL_SPEED)
+        speedY = Math.min(speedY, CONFIG.PLAYER.WALL_FALL_SPEED)
       }
 
     }

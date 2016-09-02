@@ -19,13 +19,18 @@ export default {
     DASH: 75, // k
     TIMEWARP: 16 // shift
   },
-  MOVEMENT: {
+
+  PLAYER: {
     JUMP_SPEED: 6,
     JUMP_LENGTH: 5,
     WALK_SPEED: 1,
     WALK_SPEED_MAX: 4,
     DASH_SPEED: 10,
     WALL_FALL_SPEED: 1.5
+  },
+
+  ENEMY: {
+    MOVE_SPEED: 2
   },
 
   WORLD: {
