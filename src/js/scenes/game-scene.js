@@ -1,5 +1,7 @@
 import Player from '../entities/player'
+import Enemy from '../entities/enemy'
 import Sprite from '../graphics/sprite'
+import handlePlayerEnemyCollisions from '../collisions/handle-player-enemy-collisions'
 
 export default function GameScene(app) {
 
@@ -7,6 +9,8 @@ export default function GameScene(app) {
 
   // entities
   var player
+  var enemies = []
+  var projectiles = []
 
   // Images and textures
   var groundImage = new Image()
@@ -55,9 +59,11 @@ export default function GameScene(app) {
 
     player = new Player(playerTexture)
 
-
-
-
+    enemies.push(
+      new Enemy(enemyTexture, 450),
+      new Enemy(enemyTexture, 475),
+      new Enemy(enemyTexture, 500)
+    )
 
     // Music
     app.sound.music.playSong1()
@@ -80,13 +86,20 @@ export default function GameScene(app) {
     //console.log('updating game scene')
 
     player.update(app, self)
-    // enemy update()
-    // projectile.update()
+    enemies.forEach(function(enemy) {
+      enemy.update(app, self)
+    })
+    projectiles.forEach(function(proj) {
+      proj.update(app, self)
+    })
     // foreground.update()
 
     // player projectiles colliding with enemies
     // player projectiles with wall
     // enemy projectiles colliding with player
+    enemies.forEach(function(enemy) {
+      handlePlayerEnemyCollisions(player, enemy)
+    })
     // enemy projectiles with wall
     // player colliding with enemies
 
@@ -102,12 +115,18 @@ export default function GameScene(app) {
     //platform3Sprite._draw(app.canvas)
     // Platform 3 (upper) is disabled since I don't think the player will be vulnerable enough on the ground otherwise
 
+    // enemy draws
+    enemies.forEach(function(enemy, index) {
+      enemy.draw(app)
+    })
+
     // Player draw
     player.draw(app)
 
-    // TODO: enemy draws
-
     // TODO: projectile draws
+    projectiles.forEach(function(proj) {
+      proj.draw(app)
+    })
 
     // TODO: other draws; particles?
 
