@@ -7,11 +7,10 @@ export default {
     MOVE_LEFT: 65, // a
     MOVE_RIGHT: 68, // d
     JUMP: 32, // space
-    DASH: 74, // j
-    TIMEWARP: 16, // shift
-    DEV_K: 75 // k
+    SHOOT: 74, // j
+    DASH: 75, // k
+    TIMEWARP: 16 // shift
   },
-
   MOVEMENT: {
     JUMP_SPEED: 6,
     JUMP_LENGTH: 5,
