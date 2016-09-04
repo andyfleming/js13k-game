@@ -61,7 +61,7 @@ export default function GameScene(app) {
 
     enemies.push(
       new Enemy(enemyTexture, 450),
-      new Enemy(enemyTexture, 475),
+      new Enemy(enemyTexture, 474),
       new Enemy(enemyTexture, 500)
     )
 
