@@ -68,22 +68,9 @@ export default function GameScene(app) {
     // Music
     app.sound.music.playSong1()
 
-    var count = 10
-    var interval
-
-    interval = setInterval(function() {
-      count--
-
-      app.sound.fx.playSound1()
-
-      if (count === 0) {
-        clearInterval(interval)
-      }
-    }, 300)
   }
 
   self.update = function() {
-    //console.log('updating game scene')
 
     player.update(app, self)
     enemies.forEach(function(enemy) {
@@ -98,7 +85,7 @@ export default function GameScene(app) {
     // player projectiles with wall
     // enemy projectiles colliding with player
     enemies.forEach(function(enemy) {
-      handlePlayerEnemyCollisions(player, enemy)
+      handlePlayerEnemyCollisions(app, player, enemy)
     })
     // enemy projectiles with wall
     // player colliding with enemies

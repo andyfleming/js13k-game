@@ -39,8 +39,13 @@ export default function Player(texture) {
 
     // Dashing
     if (app.keys[CONFIG.KEY.DASH]) {
-      self.dashing = true
       // TODO: drain from special bar
+
+      if (!self.dashing) {
+        self.dashing = true
+        app.sound.fx.playDashSound()
+      }
+
     } else {
       self.dashing = false
     }
@@ -97,6 +102,7 @@ export default function Player(texture) {
         jumpFramesLeft = CONFIG.PLAYER.JUMP_LENGTH
         doubleJumpUsed = true
         doubleJumpReady = false
+        app.sound.fx.playJumpSound()
 
       } else if (!jumping) {
 
@@ -104,6 +110,7 @@ export default function Player(texture) {
         onGround = false
         jumping = true
         jumpFramesLeft = CONFIG.PLAYER.JUMP_LENGTH
+        app.sound.fx.playJumpSound()
 
       }
 
