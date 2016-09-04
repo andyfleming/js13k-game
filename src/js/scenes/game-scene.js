@@ -1,5 +1,6 @@
 import Player from '../entities/player'
 import Enemy from '../entities/enemy'
+import Bullet from '../entities/bullet'
 import Sprite from '../graphics/sprite'
 import handlePlayerEnemyCollisions from '../collisions/handle-player-enemy-collisions'
 
@@ -11,6 +12,7 @@ export default function GameScene(app) {
   var player
   var enemies = []
   var projectiles = []
+  var projectilesIndex = 0
 
   // Images and textures
   var groundImage = new Image()
@@ -25,6 +27,9 @@ export default function GameScene(app) {
   var playerTexture
   var enemyImage = new Image()
   var enemyTexture
+  var bulletImage = new Image()
+  var bulletTexture
+
 
   function loadImage(src, image) {
     return new Promise(function(resolve) {
@@ -42,6 +47,7 @@ export default function GameScene(app) {
       loadImage('ground_tiny.png', groundImage).then(function(t) { groundTexture = t }),
       loadImage('person_cut_tiny.png', playerImage).then(function(t) { playerTexture = t }),
       loadImage('enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
+      loadImage('bullet.tiny.png', bulletImage).then(function(t) { bulletTexture = t }),
     ])
   }
 
@@ -69,6 +75,15 @@ export default function GameScene(app) {
 
   }
 
+  self.spawnBullet = function(x, y, lastXDirection) {
+    projectiles[projectilesIndex] = new Bullet(bulletTexture, x, y, lastXDirection, projectilesIndex++)
+  }
+
+  self.removeProjectile = function(index) {
+    projectiles[index] = null
+  }
+
+
   self.update = function() {
 
     player.update(app, self)
@@ -76,7 +91,9 @@ export default function GameScene(app) {
       enemy.update(app, self)
     })
     projectiles.forEach(function(proj) {
-      proj.update(app, self)
+      if (proj) {
+        proj.update(app, self)
+      }
     })
     // foreground.update()
 
@@ -111,7 +128,9 @@ export default function GameScene(app) {
 
     // TODO: projectile draws
     projectiles.forEach(function(proj) {
-      proj.draw(app)
+      if (proj) {
+        proj.draw(app)
+      }
     })
 
     // TODO: other draws; particles?

@@ -10,6 +10,8 @@ function App() {
 
   var self = this
 
+  self.frameCount = 0
+
   self.scenes = {
     menu: new MenuScene(self),
     game: new GameScene(self)
@@ -26,6 +28,7 @@ function App() {
     self.canvas.cls()
     self.currentScene.draw()
     self.canvas.flush()
+    self.frameCount++
   }
 
   // -------------------------------------------------

@@ -21,7 +21,7 @@
     "semi": 1,
     "indent": 1,
     "space-infix-ops": 1,
-    "comma-spacing": 1
+    "comma-spacing": 0
   },
   "globals": {
     "TC": false,

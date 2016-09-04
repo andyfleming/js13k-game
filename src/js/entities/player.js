@@ -1,6 +1,10 @@
 import Sprite from '../graphics/sprite'
 import CONFIG from '../config/config'
 
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export default function Player(texture) {
 
   var self = this
@@ -209,6 +213,14 @@ export default function Player(texture) {
       jumping = false
       doubleJumpUsed = false
       doubleJumpReady = false
+    }
+
+    if (app.keys[CONFIG.KEY.SHOOT]) {
+      if (app.frameCount % 5 === 0) {
+        console.log(speedX)
+        scene.spawnBullet(self.sprite.posX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
+        app.sound.fx.playShoot()
+      }
     }
 
   }

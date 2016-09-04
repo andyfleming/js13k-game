@@ -35,6 +35,10 @@ export default {
 
   WORLD: {
     GRAVITY: 0.5
+  },
+
+  PROJECTILES: {
+    BULLET_SPEED: 5
   }
 
 }
