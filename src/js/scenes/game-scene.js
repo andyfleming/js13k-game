@@ -65,7 +65,7 @@ export default function GameScene(app) {
     )
 
     // Music
-    app.sound.music.playSong1()
+    //app.sound.music.playSong1()
 
   }
 
