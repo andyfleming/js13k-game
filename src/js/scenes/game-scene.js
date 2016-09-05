@@ -5,6 +5,7 @@ import Sprite from '../graphics/sprite'
 import loadImage from '../graphics/load-image'
 import handlePlayerEnemyCollisions from '../collisions/handle-player-enemy-collisions'
 import handleProjectileEnemyCollisions from '../collisions/handle-projectile-enemy-collisions'
+import RainForeground from '../entities/rain-foreground'
 
 export default function GameScene(app) {
 
@@ -25,6 +26,9 @@ export default function GameScene(app) {
   var platform1Sprite
   var platform2Sprite
   //var platform3Sprite
+  var foreground
+  var rainImage = new Image()
+  var rainTexture
   var playerImage = new Image()
   var playerTexture
   var enemyImage = new Image()
@@ -40,6 +44,7 @@ export default function GameScene(app) {
       loadImage(app, 'hero.tiny.png', playerImage).then(function(t) { playerTexture = t }),
       loadImage(app, 'enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
       loadImage(app, 'bullet.tiny.png', bulletImage).then(function(t) { bulletTexture = t }),
+      loadImage(app, 'rain_pixel.png', rainImage).then(function(t) { rainTexture = t }),
     ])
   }
 
@@ -64,6 +69,8 @@ export default function GameScene(app) {
       new Enemy(enemyTexture, 510, 4),
       new Enemy(enemyTexture, 515, 5)
     )
+
+    foreground = new RainForeground(rainTexture)
 
     // Music
     app.sound.music.playSong1()
@@ -95,7 +102,9 @@ export default function GameScene(app) {
         proj.update(app, self)
       }
     })
-    // foreground.update()
+
+    // Update rain foreground
+    foreground.update()
 
     // player projectiles colliding with enemies
     enemies.forEach(function(enemy) {
@@ -148,6 +157,9 @@ export default function GameScene(app) {
     })
 
     // TODO: other draws; particles?
+
+    // Draw rain foreground
+    foreground.draw(app.canvas)
 
   }
 
