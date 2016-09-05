@@ -40,6 +40,9 @@ export default function Player(texture) {
     // If the player is on the ground and pressing left or right they are "walking" / strafing
     walking = (onGround && (app.keys[CONFIG.KEY.MOVE_LEFT] || app.keys[CONFIG.KEY.MOVE_RIGHT]))
 
+    // Timewarp
+    scene.timewarp = app.keys[CONFIG.KEY.TIMEWARP]
+
     if (walking) {
       if (!self.dashing) {
         self.sprite.animate(app.frameCount)

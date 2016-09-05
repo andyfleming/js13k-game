@@ -39,11 +39,11 @@ export default function RainForeground(rainTexture, canvasWidth, canvasHeight) {
   /**
    * @todo handle timewarp
    */
-  self.update = function() {
+  self.update = function(timewarp) {
 
     drops.forEach(function(drop, index) {
-      drop.x += drop.xSpeed
-      drop.y += drop.ySpeed
+      drop.x += drop.xSpeed * (timewarp ? 0.1 : 1)
+      drop.y += drop.ySpeed * (timewarp ? 0.1 : 1)
 
       // If drop is out of range, regenerate it
       if (drop.y > canvasHeight || drop.x < 0 || drop.x > canvasWidth) {

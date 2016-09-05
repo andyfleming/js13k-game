@@ -11,6 +11,9 @@ export default function GameScene(app) {
 
   var self = this
 
+  // Scene state
+  self.timewarp = false
+
   // entities
   var player
   var enemies = []
@@ -104,7 +107,7 @@ export default function GameScene(app) {
     })
 
     // Update rain foreground
-    foreground.update()
+    foreground.update(self.timewarp)
 
     // player projectiles colliding with enemies
     enemies.forEach(function(enemy) {
