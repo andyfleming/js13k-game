@@ -5,8 +5,8 @@ var NUM_DROPS = 200
 
 function generateDrop(canvasWidth, canvasHeight, generateAtTop) {
 
-  var xSpeed = -4 + rand() * 4 + 2
-  var ySpeed = randInt(5, 10)
+  var xSpeed = -3 + rand() * 3 + 1.5
+  var ySpeed = randInt(4, 9)
   var length = randInt(4, 16)
 
   return {
