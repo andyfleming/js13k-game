@@ -19,8 +19,16 @@ export default function Enemy(texture, startingX, index) {
   ], 1, 4)
 
   self.update = function(app, scene) {
-    self.sprite.animate(app.frameCount)
-    self.sprite.posX += (direction === 'l') ? -CONFIG.ENEMY.MOVE_SPEED : CONFIG.ENEMY.MOVE_SPEED
+
+    // Animate, but only every 3rd frame if we are in timewarp
+    if (!scene.timewarp || app.frameCount % 3 === 0) {
+      self.sprite.animate(app.frameCount)
+    }
+
+    var directionalModifier = (direction === 'l') ? -1 : 1
+    var timewarpModifier = (scene.timewarp) ? 0.3 : 1
+
+    self.sprite.posX += CONFIG.ENEMY.MOVE_SPEED * directionalModifier * timewarpModifier
 
     if (self.sprite.posX <= 0) {
       direction = 'r'
