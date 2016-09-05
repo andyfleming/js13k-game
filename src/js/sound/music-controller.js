@@ -142,6 +142,7 @@ export default function MusicController() {
     // start the bass part immediately
     sequence3.play(when)
 
+    // After a delay, turn up the volume for the second and third instruments
     setTimeout(function() {
       sequence1.gain.gain.value = 1.0 / 2
     }, (60 / tempo) * 32 * 1000)
