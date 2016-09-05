@@ -70,7 +70,7 @@ export default function GameScene(app) {
       new Enemy(enemyTexture, 515, 5)
     )
 
-    foreground = new RainForeground(rainTexture)
+    foreground = new RainForeground(rainTexture, app.canvas.c.width, app.canvas.c.height)
 
     // Music
     app.sound.music.playSong1()
