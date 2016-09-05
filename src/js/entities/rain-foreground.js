@@ -1,5 +1,23 @@
-var NUM_DROPS = 10
-var rand = Math.random
+import rand from '../math/rand'
+import randInt from '../math/rand-int'
+
+var NUM_DROPS = 200
+
+function generateDrop(canvasWidth, canvasHeight, generateAtTop) {
+
+  var xSpeed = -4 + rand() * 4 + 2
+  var ySpeed = randInt(5, 10)
+  var length = randInt(4, 16)
+
+  return {
+    x: rand() * canvasWidth,
+    y: (generateAtTop) ? 0 : rand() * canvasHeight,
+    xSpeed: xSpeed,
+    ySpeed: ySpeed,
+    length: length,
+    rotation: Math.atan2(length, xSpeed) + 1.5708 // calculate the rotation and add 90 degrees
+  }
+}
 
 export default function RainForeground(rainTexture, canvasWidth, canvasHeight) {
 
@@ -13,12 +31,7 @@ export default function RainForeground(rainTexture, canvasWidth, canvasHeight) {
 
   // Create drops
   for (var a = 0; a < NUM_DROPS; a++) {
-    drops.push({
-      x: rand() * canvasWidth,
-      y: rand() * canvasHeight,
-      rotation: 0.1,
-      length: 10
-    })
+    drops.push(generateDrop(canvasWidth, canvasHeight, false))
   }
 
   console.log(drops)
@@ -28,8 +41,15 @@ export default function RainForeground(rainTexture, canvasWidth, canvasHeight) {
    */
   self.update = function() {
 
-    drops.forEach(function(drop) {
-      drop.y += 1
+    drops.forEach(function(drop, index) {
+      drop.x += drop.xSpeed
+      drop.y += drop.ySpeed
+
+      // If drop is out of range, regenerate it
+      if (drop.y > canvasHeight || drop.x < 0 || drop.x > canvasWidth) {
+        drops[index] = generateDrop(canvasWidth, canvasHeight, true)
+      }
+
     })
 
   }
@@ -55,7 +75,7 @@ export default function RainForeground(rainTexture, canvasWidth, canvasHeight) {
        * @param {Number} u1
        * @param {Number} v1
        */
-      tinyCanvas.img(rainTexture, 0, 0, 1, drop.length, 0, 0, 1, drop.length)
+      tinyCanvas.img(rainTexture, 0, 0, 1, drop.length, 0, 0, 1, 1)
 
       tinyCanvas.pop()
 

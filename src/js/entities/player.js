@@ -1,9 +1,6 @@
 import Sprite from '../graphics/sprite'
 import CONFIG from '../config/config'
-
-function randInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+import randInt from '../math/rand-int'
 
 export default function Player(texture) {
 
