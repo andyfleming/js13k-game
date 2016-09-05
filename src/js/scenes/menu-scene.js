@@ -1,40 +1,28 @@
 import Sprite from '../graphics/sprite'
+import loadImage from '../graphics/load-image'
 
 export default function MenuScene(app) {
 
   var self = this
 
-  var PlayerImage = new Image()
-  var PlayerTexture = null
-  var EnemyImage = new Image()
-  var EnemyTexture = null
+  var playerImage = new Image()
+  var playerTexture = null
+  var enemyImage = new Image()
+  var enemyTexture = null
 
   // load
   self.load = function() {
-
     return Promise.all([
-      new Promise(function(resolve) {
-        PlayerImage.src    = 'hero.tiny.png'
-        PlayerImage.onload = function() {
-          PlayerTexture = TCTex(app.canvas.g, PlayerImage, PlayerImage.width, PlayerImage.height)
-          resolve()
-        }
-      }),
-      new Promise(function(resolve) {
-        EnemyImage.src = 'enemy1.png'
-        EnemyImage.onload = function() {
-          EnemyTexture = TCTex(app.canvas.g, EnemyImage, EnemyImage.width, EnemyImage.height)
-          resolve()
-        }
-      })
-    ]).catch(function(err) { console.error(err) })
+      loadImage(app, 'hero.tiny.png', playerImage).then(function(t) { playerTexture = t }),
+      loadImage(app, 'enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
+    ])
   }
 
   var playerSp
 
   self.create = function() {
     console.log('creating scene')
-    playerSp = new Sprite(100, 100, PlayerTexture, [
+    playerSp = new Sprite(100, 100, playerTexture, [
       [0, 0, 16, 20],
       [16, 0, 16, 20],
       [32, 0, 16, 20],
@@ -45,8 +33,6 @@ export default function MenuScene(app) {
     app.canvas.bkg(0.227, 0.227, 0.227)
   }
 
-  // create
-  // update
   self.update = function() {
     //console.log('updating menu scene')
     if (app.keys[13]) {

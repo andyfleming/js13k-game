@@ -2,6 +2,7 @@ import Player from '../entities/player'
 import Enemy from '../entities/enemy'
 import Bullet from '../entities/bullet'
 import Sprite from '../graphics/sprite'
+import loadImage from '../graphics/load-image'
 import handlePlayerEnemyCollisions from '../collisions/handle-player-enemy-collisions'
 import handleProjectileEnemyCollisions from '../collisions/handle-projectile-enemy-collisions'
 
@@ -31,24 +32,14 @@ export default function GameScene(app) {
   var bulletImage = new Image()
   var bulletTexture
 
-
-  function loadImage(src, image) {
-    return new Promise(function(resolve) {
-      image.src    = src
-      image.onload = function() {
-        resolve(TCTex(app.canvas.g, image, image.width, image.height))
-      }
-    })
-  }
-
   // load
   self.load = function() {
     return Promise.all([
-      loadImage('platform_exp_1_tiny.png', platformImage).then(function(t) { platformTexture = t }),
-      loadImage('ground_tiny.png', groundImage).then(function(t) { groundTexture = t }),
-      loadImage('hero.tiny.png', playerImage).then(function(t) { playerTexture = t }),
-      loadImage('enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
-      loadImage('bullet.tiny.png', bulletImage).then(function(t) { bulletTexture = t }),
+      loadImage(app, 'platform_exp_1_tiny.png', platformImage).then(function(t) { platformTexture = t }),
+      loadImage(app, 'ground_tiny.png', groundImage).then(function(t) { groundTexture = t }),
+      loadImage(app, 'hero.tiny.png', playerImage).then(function(t) { playerTexture = t }),
+      loadImage(app, 'enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
+      loadImage(app, 'bullet.tiny.png', bulletImage).then(function(t) { bulletTexture = t }),
     ])
   }
 
