@@ -4,6 +4,7 @@ import CONFIG from '../config/config'
 export default function Bullet(texture, startingX, startingY, lastXDirection, index) {
 
   var self = this
+  var firstFrames = 0
 
   // Initial state
   var direction = lastXDirection
@@ -11,13 +12,21 @@ export default function Bullet(texture, startingX, startingY, lastXDirection, in
   self.sprite = new Sprite(startingX, startingY, texture, [
     [0, 0, 8, 8],
     [8, 0, 16, 8]
-  ], 1, 2)
+  ], 0, 2)
 
   if (lastXDirection === 'l') {
     self.sprite.flipped = true
   }
 
   self.update = function(app, scene) {
+
+    // Handle hiding muzzle flash
+    if (firstFrames === 2) {
+      self.sprite.setFrame(1)
+    } else {
+      firstFrames++
+    }
+
     self.sprite.posX += (direction === 'l') ? -CONFIG.PROJECTILES.BULLET_SPEED : CONFIG.PROJECTILES.BULLET_SPEED
 
     if (self.sprite.posX <= 0 || self.sprite.posX >= (700 - 16)) {

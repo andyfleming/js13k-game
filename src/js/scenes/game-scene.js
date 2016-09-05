@@ -45,7 +45,7 @@ export default function GameScene(app) {
     return Promise.all([
       loadImage('platform_exp_1_tiny.png', platformImage).then(function(t) { platformTexture = t }),
       loadImage('ground_tiny.png', groundImage).then(function(t) { groundTexture = t }),
-      loadImage('person_cut_tiny.png', playerImage).then(function(t) { playerTexture = t }),
+      loadImage('hero.tiny.png', playerImage).then(function(t) { playerTexture = t }),
       loadImage('enemy1.png', enemyImage).then(function(t) { enemyTexture = t }),
       loadImage('bullet.tiny.png', bulletImage).then(function(t) { bulletTexture = t }),
     ])
@@ -71,8 +71,7 @@ export default function GameScene(app) {
     )
 
     // Music
-    //app.sound.music.playSong1()
-
+    app.sound.music.playSong1()
   }
 
   self.spawnBullet = function(x, y, lastXDirection) {
