@@ -2,15 +2,17 @@ import rand from '../math/rand'
 import randInt from '../math/rand-int'
 
 var NUM_DROPS = 200
+var TIME_WARP_FACTOR = 0.2
+var RAIN_ANGLE = -4 // sweet angle for intensity
 
 function generateDrop(canvasWidth, canvasHeight, generateAtTop) {
 
-  var xSpeed = -3 + rand() * 3 + 1.5
+  var xSpeed = -3 + rand() * 3 + 1.5 + RAIN_ANGLE
   var ySpeed = randInt(4, 9)
   var length = randInt(4, 16)
 
   return {
-    x: rand() * canvasWidth,
+    x: (rand() * (canvasWidth + 600)) - 300, // note we add an extra 300 pixels to each edge
     y: (generateAtTop) ? 0 : rand() * canvasHeight,
     xSpeed: xSpeed,
     ySpeed: ySpeed,
@@ -42,11 +44,11 @@ export default function RainForeground(rainTexture, canvasWidth, canvasHeight) {
   self.update = function(timewarp) {
 
     drops.forEach(function(drop, index) {
-      drop.x += drop.xSpeed * (timewarp ? 0.1 : 1)
-      drop.y += drop.ySpeed * (timewarp ? 0.1 : 1)
+      drop.x += drop.xSpeed * (timewarp ? TIME_WARP_FACTOR : 1)
+      drop.y += drop.ySpeed * (timewarp ? TIME_WARP_FACTOR : 1)
 
       // If drop is out of range, regenerate it
-      if (drop.y > canvasHeight || drop.x < 0 || drop.x > canvasWidth) {
+      if (drop.y > canvasHeight) {
         drops[index] = generateDrop(canvasWidth, canvasHeight, true)
       }
 
