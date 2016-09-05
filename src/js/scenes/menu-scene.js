@@ -14,7 +14,7 @@ export default function MenuScene(app) {
 
     return Promise.all([
       new Promise(function(resolve) {
-        PlayerImage.src    = 'person_cut_tiny.png'
+        PlayerImage.src    = 'hero.tiny.png'
         PlayerImage.onload = function() {
           PlayerTexture = TCTex(app.canvas.g, PlayerImage, PlayerImage.width, PlayerImage.height)
           resolve()

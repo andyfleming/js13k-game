@@ -6,12 +6,15 @@ export default function Bullet(texture, startingX, startingY, lastXDirection, in
   var self = this
   var firstFrames = 0
 
+  // Store and expose the index so our collision engine can remove elements by index
+  self.index = index
+
   // Initial state
   var direction = lastXDirection
 
   self.sprite = new Sprite(startingX, startingY, texture, [
-    [0, 0, 8, 8],
-    [8, 0, 16, 8]
+    [0, 0, 4, 4],
+    [4, 0, 4, 4]
   ], 0, 2)
 
   if (lastXDirection === 'l') {

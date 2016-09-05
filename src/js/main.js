@@ -56,7 +56,7 @@ function App() {
     self.scenes.menu.load(),
     self.scenes.game.load()
   ]).then(function() {
-    self.goToScene('game')
+    self.goToScene('menu')
     self.runMainLoop()
   })
 

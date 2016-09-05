@@ -3,6 +3,7 @@ import Enemy from '../entities/enemy'
 import Bullet from '../entities/bullet'
 import Sprite from '../graphics/sprite'
 import handlePlayerEnemyCollisions from '../collisions/handle-player-enemy-collisions'
+import handleProjectileEnemyCollisions from '../collisions/handle-projectile-enemy-collisions'
 
 export default function GameScene(app) {
 
@@ -65,9 +66,12 @@ export default function GameScene(app) {
     player = new Player(playerTexture)
 
     enemies.push(
-      new Enemy(enemyTexture, 450),
-      new Enemy(enemyTexture, 474),
-      new Enemy(enemyTexture, 500)
+      new Enemy(enemyTexture, 450, 0),
+      new Enemy(enemyTexture, 474, 1),
+      new Enemy(enemyTexture, 500, 2),
+      new Enemy(enemyTexture, 505, 3),
+      new Enemy(enemyTexture, 510, 4),
+      new Enemy(enemyTexture, 515, 5)
     )
 
     // Music
@@ -82,12 +86,18 @@ export default function GameScene(app) {
     projectiles[index] = null
   }
 
+  self.removeEnemy = function(index) {
+    enemies[index] = null
+  }
+
 
   self.update = function() {
 
     player.update(app, self)
     enemies.forEach(function(enemy) {
-      enemy.update(app, self)
+      if (enemy) {
+        enemy.update(app, self)
+      }
     })
     projectiles.forEach(function(proj) {
       if (proj) {
@@ -97,15 +107,27 @@ export default function GameScene(app) {
     // foreground.update()
 
     // player projectiles colliding with enemies
+    enemies.forEach(function(enemy) {
+      if (enemy) {
+        projectiles.forEach(function(proj) {
+          if (proj) {
+            handleProjectileEnemyCollisions(app, self, proj, enemy)
+          }
+        })
+      }
+    })
     // player projectiles with wall
     // enemy projectiles colliding with player
     enemies.forEach(function(enemy) {
-      handlePlayerEnemyCollisions(app, player, enemy)
+      if (enemy) {
+        handlePlayerEnemyCollisions(app, player, enemy)
+      }
     })
     // enemy projectiles with wall
     // player colliding with enemies
 
   }
+
 
   self.draw = function() {
     //console.log('drawing menu scene')
@@ -118,8 +140,10 @@ export default function GameScene(app) {
     // Platform 3 (upper) is disabled since I don't think the player will be vulnerable enough on the ground otherwise
 
     // enemy draws
-    enemies.forEach(function(enemy, index) {
-      enemy.draw(app)
+    enemies.forEach(function(enemy) {
+      if (enemy) {
+        enemy.draw(app)
+      }
     })
 
     // Player draw

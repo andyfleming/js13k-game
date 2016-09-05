@@ -31,7 +31,8 @@ export default function Player(texture) {
     [18, 0, 18, 24],
     [36, 0, 18, 24],
     [54, 0, 18, 24],
-    [72, 0, 18, 24]
+    [72, 0, 18, 24],
+    [90, 0, 18, 24]
   ], 0, 4)
 
   self.update = function(app, scene) {
@@ -43,7 +44,9 @@ export default function Player(texture) {
     walking = (onGround && (app.keys[CONFIG.KEY.MOVE_LEFT] || app.keys[CONFIG.KEY.MOVE_RIGHT]))
 
     if (walking) {
-      self.sprite.animate(app.frameCount)
+      if (!self.dashing) {
+        self.sprite.animate(app.frameCount)
+      }
     } else {
       self.sprite.setFrame(0)
     }
@@ -54,6 +57,7 @@ export default function Player(texture) {
 
       if (!self.dashing) {
         self.dashing = true
+        self.sprite.setFrame(5)
         app.sound.fx.playDashSound()
       }
 

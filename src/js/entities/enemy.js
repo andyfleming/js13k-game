@@ -1,12 +1,15 @@
 import Sprite from '../graphics/sprite'
 import CONFIG from '../config/config'
 
-export default function Enemy(texture, startingX) {
+export default function Enemy(texture, startingX, index) {
 
   var self = this
 
   // Initial state
   var direction = 'l'
+
+  // Store and expose the index so our collision engine can remove elements by index
+  self.index = index
 
   self.sprite = new Sprite(startingX, 263, texture, [
     [0, 0, 16, 20],
@@ -16,6 +19,7 @@ export default function Enemy(texture, startingX) {
   ], 1, 4)
 
   self.update = function(app, scene) {
+    self.sprite.animate(app.frameCount)
     self.sprite.posX += (direction === 'l') ? -CONFIG.ENEMY.MOVE_SPEED : CONFIG.ENEMY.MOVE_SPEED
 
     if (self.sprite.posX <= 0) {
