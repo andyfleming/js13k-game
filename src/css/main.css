@@ -24,6 +24,8 @@ canvas{
 #c {
     width: 1050px;
     height: 450px;
+    /*width: 700px;*/
+    /*height: 300px;*/
     image-rendering: -moz-crisp-edges;         /* Firefox */
     image-rendering:   -o-crisp-edges;         /* Opera */
     image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
