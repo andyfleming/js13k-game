@@ -32,7 +32,30 @@ module.exports = () => {
 
   gulp.task( 'build-min', [ 'build-full' ], () => {
     return gulp.src('./build/compile/main.js')
-      .pipe( uglify() )
+      .pipe( uglify(/*{
+        mangle: {
+          toplevel: true,
+          eval: true
+        },
+        compress: {
+          dead_code: true,
+          drop_console: true,
+          drop_debugger: true,
+          unsafe_comps: true,
+          booleans: true,
+          join_vars: true,
+          if_return: true,
+          unused: true,
+          evaluate: true,
+          comparisons: true,
+          conditionals: true,
+          unsafe: true,
+          loops: true,
+          cascade: true,
+          collapse_vars: true,
+          warnings: true
+        }
+      }*/) )
       .pipe( rename('main.min.js') )
       .pipe( gulp.dest('./build/compile') );
   });
