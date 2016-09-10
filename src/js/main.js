@@ -1,7 +1,8 @@
-import './libs/tiny-canvas'
+import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
 
-var canvas = TC(document.getElementById('c'))
+var canvas = TinyCanvas(document.getElementById('c'))
 var frameCount = 0
+
 
 // Entity Group Layer "ids"
 var EGL_WORLD = 0
@@ -77,13 +78,17 @@ function loop() {
   frameCount++
 }
 
+
 // ---------------------------------------------------------
 // Initialize "app"
 // ---------------------------------------------------------
 
 spriteSheetImage.src    = 'images/sheet.png'
 spriteSheetImage.onload = function() {
-  spriteSheetTexture = TCTex(canvas.g, spriteSheetImage, spriteSheetImage.width, spriteSheetImage.height)
+  spriteSheetTexture = CreateTexture(canvas.g, spriteSheetImage, spriteSheetImage.width, spriteSheetImage.height)
+
+  // Setup
+  canvas.bkg(0.133, 0.125, 0.204)
 
   // Start loop
   loop()
