@@ -59,10 +59,6 @@ function CreateTexture(gl, image, width, height) {
   texture.height = height;
   return texture;
 }
-window['TCShd'] = CompileShader;
-window['TCPrg'] = CreateShaderProgram;
-window['TCBuf'] = CreateBuffer;
-window['TCTex'] = CreateTexture;
 
 function TinyCanvas(canvas) {
   var gl = canvas.getContext('webgl'),
@@ -288,4 +284,5 @@ function TinyCanvas(canvas) {
   };
   return renderer;
 }
-window['TC'] = TinyCanvas;
+
+export { TinyCanvas, CreateTexture }
