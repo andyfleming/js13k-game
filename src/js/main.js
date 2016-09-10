@@ -1,65 +1,90 @@
 import './libs/tiny-canvas'
-import KeyboardController from './controls/keyboard-controller'
-import FxController from './sound/fx-controller'
-import MusicController from './sound/music-controller'
-import MenuScene from './scenes/menu-scene'
-import GameScene from './scenes/game-scene'
-import CONFIG from './config/config'
 
-function App() {
+var canvas = TC(document.getElementById('c'))
+var frameCount = 0
 
-  var self = this
+// Entity Group Layer "ids"
+var EGL_WORLD = 0
+var EGL_ENEMIES = 1
+var EGL_HERO = 2
+var EGL_PROJECTILES = 3
+var EGL_FOREGROUND = 4
+var entityGroups = [
 
-  self.frameCount = 0
+  // world
+  [],
 
-  self.scenes = {
-    menu: new MenuScene(self),
-    game: new GameScene(self)
-  }
+  // enemies
+  [],
 
-  self.goToScene = function(name) {
-    self.currentScene = self.scenes[name]
-    self.currentScene.create()
-  }
+  // hero
+  [],
 
-  self.runMainLoop = function() {
-    requestAnimationFrame(self.runMainLoop)
-    self.currentScene.update()
-    self.canvas.cls()
-    self.currentScene.draw()
-    self.canvas.flush()
-    self.frameCount++
-  }
+  // projectiles
+  [],
 
-  // -------------------------------------------------
-  // INITIALIZE APP
-  // -------------------------------------------------
+  // foreground
+  []
 
-  // Import config
-  self.config = CONFIG
+]
 
-  // Set up music and fx controllers
-  self.sound = {
-    fx: new FxController(),
-    music: new MusicController()
-  }
+var spriteSheetImage = new Image()
+var spriteSheetTexture
 
-  // Set up keyboard input
-  var keyboardController = new KeyboardController()
-  self.keys = keyboardController.keys
 
-  // Create tiny canvas instance from canvas el
-  self.canvas = TC(document.getElementById('c'))
+// This is an example that doesn't get compiled in, but is just here to document an interface
+var ENTITY_EXAMPLE = {
 
-  // loop through scenes and load
-  Promise.all([
-    self.scenes.menu.load(),
-    self.scenes.game.load()
-  ]).then(function() {
-    self.goToScene('menu')
-    self.runMainLoop()
-  })
+  // hitbox: [x1, y1, x2, y2]
+  hb: [0, 0, 200, 200],
+
+  // sprite stack
+  ss: [],
+
+  update: function() {}
+
+  // proposed: action stack - used for things like falling
+  //as: []
 
 }
 
-new App()
+function updateEntity(entity) {
+
+}
+
+function drawEntitySprites(entity) {
+
+}
+
+function update() {
+  entityGroups.forEach(function(group) {
+    group.forEach(updateEntity)
+  })
+}
+
+function draw() {
+  entityGroups.forEach(function(group) {
+    group.forEach(drawEntitySprites)
+  })
+}
+
+function loop() {
+  requestAnimationFrame(loop)
+  update()
+  canvas.cls()
+  draw()
+  canvas.flush()
+  frameCount++
+}
+
+// ---------------------------------------------------------
+// Initialize "app"
+// ---------------------------------------------------------
+
+spriteSheetImage.src    = 'images/sheet.png'
+spriteSheetImage.onload = function() {
+  spriteSheetTexture = TCTex(canvas.g, spriteSheetImage, spriteSheetImage.width, spriteSheetImage.height)
+
+  // Start loop
+  loop()
+}
