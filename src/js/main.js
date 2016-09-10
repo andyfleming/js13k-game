@@ -83,7 +83,7 @@ function loop() {
 // Initialize "app"
 // ---------------------------------------------------------
 
-spriteSheetImage.src    = 'images/sheet.png'
+spriteSheetImage.src    = 's.png'
 spriteSheetImage.onload = function() {
   spriteSheetTexture = CreateTexture(canvas.g, spriteSheetImage, spriteSheetImage.width, spriteSheetImage.height)
 

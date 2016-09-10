@@ -4,8 +4,8 @@ const del  = require('del');
 module.exports = () => {
   gulp.task('clean-old-images', function () {
     return del([
-      'build/compile/images/**/*',
-      'build/dist/images/**/*',
+      'build/compile/s.png',
+      'build/dist/s.png',
     ]);
   });
 };
