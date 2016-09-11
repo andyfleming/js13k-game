@@ -136,13 +136,33 @@ var layers = [
 ]
 
 var TEXT = {
-  h: [],
-  e: [],
-  l: [],
-  o: [],
-  w: [],
-  r: [],
-  d: []
+  ' ': [72,5,5,5],
+  a: [72,0,5,5],
+  b: [77,0,5,5],
+  c: [82,0,5,5],
+  d: [87,0,5,5],
+  e: [92,0,5,5],
+  f: [97,0,5,5],
+  g: [102,0,5,5],
+  h: [107,0,5,5],
+  i: [198, 0, 3, 5],
+  j: [112,0,5,5],
+  k: [117,0,5,5],
+  l: [122,0,5,5],
+  m: [186, 0, 6, 5],
+  n: [180, 0, 6, 5],
+  o: [127,0,5,5],
+  p: [132,0,5,5],
+  q: [137,0,5,5],
+  r: [142,0,5,5],
+  s: [147,0,5,5],
+  t: [152,0,5,5],
+  u: [157,0,5,5],
+  v: [162, 0, 6, 5],
+  w: [168, 0, 6, 5],
+  x: [174, 0, 6, 5],
+  y: [192, 0, 6, 5],
+  z: [192, 0, 6, 5],
 }
 
 /**
@@ -347,10 +367,10 @@ function createRaindrop() {
   )
 }
 
-function createText(text, x, y) {
-  console.log('writing()', text)
-
-
+function createText(text, x, y, scale) {
+  scale = scale || 1
+  var runningOffsetX = 0
+  var lastWidth = 0;
   createEntity(
     C_LAYER_UI,
 
@@ -361,42 +381,22 @@ function createText(text, x, y) {
     [0, 0, 1, 1],
 
     // sprite stack
-    [
-      {
-        xo: 0,
-        yo: 0,
+    text.toLowerCase()
+      .split('')
+      .map(function (letter) {
+        runningOffsetX += lastWidth * scale
+        lastWidth = TEXT[letter][2]
+        return {
+          xo: runningOffsetX,
+          yo: 0,
+          cf: 0,
+          sx: scale,
+          sy: scale,
+          fs: [[TEXT[letter]]]
+        }
+      }),
 
-        cf: 0,
-
-        sx: 1,
-        sy: 1,
-
-        f: false,
-
-        fs: [
-          [[72, 0, 5, 5]]
-        ]
-      },
-      {
-        xo: 10,
-        yo: 0,
-
-        cf: 0,
-
-        sx: 2,
-        sy: 2,
-
-        f: false,
-
-        fs: [
-          [[72, 0, 5, 5]]
-        ]
-      }
-    ],
-
-    function() {
-
-    }
+    function() {}
   )
 }
 
@@ -510,7 +510,7 @@ function startNewGame() {
   // etc, etc
 
   createHero()
-  createText('Hello World', 90, 90)
+  createText('dont go crazy andy', 90, 90, 2)
 
 
   // Temp: Fake dying
