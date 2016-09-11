@@ -88,6 +88,11 @@ var C_STATUS_POSTGAME = 3
  */
 var gameStatus = C_STATUS_MENU
 
+// Other game state
+var timewarp = false
+var score
+var heatlh
+
 // Layer "ids"
 var C_LAYER_WORLD       = 0
 var C_LAYER_ENEMIES     = 1
@@ -523,6 +528,8 @@ function update() {
       // TODO: resume game
     }
   }
+
+  timewarp = !!keys[C_KEY_TIMEWARP]
 
   layers.forEach(function(group) {
     group.forEach(updateEntity)
