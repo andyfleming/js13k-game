@@ -230,15 +230,12 @@ function createHero() {
     100,
 
     // Hitbox
-    [0, 0, 16, 20],
+    [0, 0, 18, 24],
 
     // Sprite stack
     [
       // Main hero sprite
       {
-        // current frame
-        cf: 0,
-
         // TODO: abstract defaults for offset to createSprite call?
         xo: 0,
         yo: 0,
@@ -330,7 +327,7 @@ function createRaindrop() {
 }
 
 function createText(text, x, y, centered) {
-  
+
 }
 
 function updateEntity(entity) {
@@ -358,27 +355,49 @@ function drawEntitySprites(entity) {
   // Loop through the sprite stack for the entity and draw each
   entity.s.forEach(function(sprite) {
 
+    //if (frameCount % 3 === 0) {
+    //  console.log(entity.x, entity.y)
+    //  console.log(sprite.xo, sprite.yo)
+    //}
+
     canvas.push()
     canvas.trans(entity.x + sprite.xo, entity.y + sprite.yo)
-    canvas.rot(sprite.r)
+    canvas.rot(sprite.r || 0)
 
     // If the sprite has a color, apply it
     if (sprite.c) {
       canvas.col = sprite.c
     }
 
-    var currentFrame = 0
-    var frame = [902, 0, 18, 24]
+    //var currentFrame = 0
+    //var frame = [902, 0, 18, 24]
     //var frame = [1012, 0, 1, 1]
+    var frame = sprite.fs[0][0]
+    //if (frameCount % 3 === 0) {
+    //  console.log(frame)
+    //}
     var x1 = frame[0] / spriteSheetTexture.width
     var x2 = (frame[0] + frame[2]) / spriteSheetTexture.width
+
+    //if (frameCount % 10 === 0) {
+    //  console.log([
+    //    0,
+    //    0,
+    //    frame[2],
+    //    frame[3], // NOTE: this is where y-scale needs to happen
+    //    sprite.f ? x2 : x1,       // sprite location in sheet (draw backwards if "f"/flipped)
+    //    frame[1] / spriteSheetTexture.height,
+    //    sprite.f ? x1 : x2,
+    //    (frame[1] + frame[3]) / spriteSheetTexture.height
+    //  ])
+    //}
 
     canvas.img(
       spriteSheetTexture,
       0,
       0,
       frame[2],
-      frame[3] + 10, // NOTE: this is where y-scale needs to happen
+      frame[3], // NOTE: this is where y-scale needs to happen
       sprite.f ? x2 : x1,       // sprite location in sheet (draw backwards if "f"/flipped)
       frame[1] / spriteSheetTexture.height,
       sprite.f ? x1 : x2,
@@ -476,7 +495,7 @@ spriteSheetImage.onload = function() {
 
 
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
-    //createRaindrop()
+    createRaindrop()
   }
 
 
