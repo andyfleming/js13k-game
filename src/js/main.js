@@ -32,6 +32,8 @@ function randInt(min, max) { return floor(rand() * (max - min + 1)) + min }
 
 // The tiniest canvas
 var canvas = TinyCanvas(document.getElementById('c'))
+var canvasWidth = canvas.c.width
+var canvasHeight = canvas.c.height
 
 // Simple frame count (increments on every frame)
 var frameCount = 0
@@ -57,6 +59,17 @@ addEvtListener('keyup', function(e) {
 // Keyboard controls
 var C_KEY_START_GAME = 13 // return
 var C_KEY_PAUSE_GAME = 27 // esc
+var C_KEY_MOVE_LEFT = 65 // a
+var C_KEY_MOVE_RIGHT = 68 // d
+var C_KEY_JUMP = 74 // space
+var C_KEY_SHOOT = 73 // j
+var C_KEY_DASH = 75 // k
+var C_KEY_TIMEWARP = 16 // shift
+
+// Rain configuration
+var C_RAIN_NUM_DROPS = 200
+var C_RAIN_TIME_WARP_FACTOR = 0.2
+var C_RAIN_ANGLE = -4 // sweet angle for intensity
 
 // Game status constants
 var C_STATUS_MENU     = 0
@@ -248,7 +261,64 @@ function createHero() {
 
     // Update function
     function() {
+      if (keys[C_KEY_MOVE_RIGHT]) {
+        this.x += 3
+        this.s[0].f = false // flipped => false
+      } else if (keys[C_KEY_MOVE_LEFT]) {
+        this.x -= 3
+        this.s[0].f = true // flipped => true
+      }
+    }
+  )
+}
 
+function createRaindrop() {
+  console.log('createRain() called')
+
+  var generateAtTop = true
+  var x = (rand() * (canvasWidth + 600)) - 300
+  var y = (generateAtTop) ? 0 : rand() * canvasHeight
+  var xSpeed = -3 + rand() * 3 + 1.5 + C_RAIN_ANGLE
+  var ySpeed = randInt(4, 9)
+  var length = randInt(4, 16)
+  var rotation = Math.atan2(length, xSpeed) + 1.5708
+
+  //
+
+  createEntity(
+    C_LAYER_FOREGROUND,
+
+    // origin (x, y)
+    x,
+    y,
+
+    // Hitbox
+    [0, 0, 1, 1],
+
+    // Sprite stack
+    [
+      // droplet sprite
+      {
+        // current frame
+        c: 0,
+        xo: 0,
+        yo: 0,
+        f: false,
+        fs: [[[1012, 0, 1, 1]]]
+      }
+    ],
+
+    // Update function
+    function() {
+      var timewarp = false // TODO: set up in global game state
+      this.x += xSpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
+      this.y += ySpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
+
+      // If drop is out of range, regenerate it
+      // TODO: update
+      //if (drop.y > canvasHeight) {
+      //  drops[index] = generateDrop(canvasWidth, canvasHeight, true)
+      //}
     }
   )
 }
@@ -257,6 +327,8 @@ function updateEntity(entity) {
   if (!entity) {
     return
   }
+
+  entity.u()
 }
 
 function drawEntitySprites(entity) {
@@ -390,6 +462,12 @@ spriteSheetImage.onload = function() {
 
   // Set the canvas background
   canvas.bkg(0.133, 0.125, 0.204)
+
+
+  for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
+    createRaindrop()
+  }
+
 
   // Start loop
   loop()
