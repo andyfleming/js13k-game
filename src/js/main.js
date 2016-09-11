@@ -42,6 +42,10 @@ var frameCount = 0
 var spriteSheetImage = new Image()
 var spriteSheetTexture
 
+// Hero and World Settings
+var C_WORLD_GRAVITY = 0.5
+var C_HERO_MAX_WALK_SPEED = 4
+
 // Key state
 var keys = {}
 
@@ -260,10 +264,10 @@ function createHero() {
     // Update function
     function() {
       if (keys[C_KEY_MOVE_RIGHT]) {
-        this.x += 3
+        this.x += C_HERO_MAX_WALK_SPEED
         this.s[0].f = false // flipped => false
       } else if (keys[C_KEY_MOVE_LEFT]) {
-        this.x -= 3
+        this.x -= C_HERO_MAX_WALK_SPEED
         this.s[0].f = true // flipped => true
       }
     }
