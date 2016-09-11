@@ -1,4 +1,12 @@
 import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
+import MusicController from '../js-old/sound/music-controller'
+import FxController from '../js-old/sound/fx-controller'
+
+var music = new MusicController()
+var fx = new FxController()
+
+music.playSong1()
+fx.playEnemyHit()
 
 /* ===================================================================================================
  NOTES
@@ -26,6 +34,8 @@ import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
 var addEvtListener = document.addEventListener
 var rand = Math.random
 var floor = Math.floor
+var min = Math.min
+var max = Math.max
 
 // Small utility functions
 function randInt(min, max) { return floor(rand() * (max - min + 1)) + min }
@@ -41,10 +51,6 @@ var frameCount = 0
 // Sprite sheet image+texture that gets loaded
 var spriteSheetImage = new Image()
 var spriteSheetTexture
-
-// Hero and World Settings
-var C_WORLD_GRAVITY = 0.5
-var C_HERO_MAX_WALK_SPEED = 4
 
 // Key state
 var keys = {}
@@ -73,7 +79,12 @@ var C_KEY_TIMEWARP = 16 // shift
 // Rain configuration
 var C_RAIN_NUM_DROPS = 200
 var C_RAIN_TIME_WARP_FACTOR = 0.2
-var C_RAIN_ANGLE = -4 // sweet angle for intensity
+var C_RAIN_ANGLE = -4
+
+// Hero and World Settings
+var C_WORLD_GRAVITY = 0.5
+var C_HERO_MAX_WALK_SPEED = 4
+var C_MAX_HEALTH = 1000
 
 // Game status constants
 var C_STATUS_MENU     = 0
@@ -91,7 +102,7 @@ var gameStatus = C_STATUS_MENU
 // Other game state
 var timewarp = false
 var score
-var heatlh
+var health
 
 // Layer "ids"
 var C_LAYER_WORLD       = 0
@@ -489,8 +500,10 @@ function startNewGame() {
   // Reset all the state
 
   // Health to 100%
+  health = C_MAX_HEALTH
 
   // Reset score
+  score = 0
 
   // Current round to 0/1
 
@@ -499,15 +512,35 @@ function startNewGame() {
   createHero()
   createText('Hello World', 90, 90)
 
+
+  // Temp: Fake dying
+  setTimeout(function() { hurt(50) }, 1000)
+  setTimeout(function() { hurt(200) }, 2000)
+  setTimeout(function() { hurt(500) }, 3000)
+  setTimeout(function() { hurt(10000000) }, 4000)
+
 }
 
-function endGame() {
+function hurt(damage) {
+  console.log('TAKING DAMAGE! ' +  damage)
+  health = Math.max(0, health - damage)
+  console.log('health => ' + health)
+
+  if (health === 0) {
+    lose()
+  }
+}
+
+function lose() {
 
   // Reset per-game layers+entities (chained intentionally)
   layers[C_LAYER_ENEMIES]
     = layers[C_LAYER_HERO]
     = layers[C_LAYER_PROJECTILES]
     = []
+
+  console.log('game over!')
+  console.log('score', score)
 }
 
 // OMG, code pathz so hot right now
