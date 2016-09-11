@@ -255,10 +255,6 @@ function createHero() {
     [
       // Main hero sprite
       {
-        // TODO: abstract defaults for offset to createSprite call?
-        xo: 0,
-        yo: 0,
-
         // flipped
         f: false,
 
@@ -317,8 +313,6 @@ function createRaindrop() {
       {
         // current frame
         c: 0x77E6B48E,
-        xo: 0,
-        yo: 0,
         sy: length,
         r: rotation,
         f: false,
@@ -429,7 +423,12 @@ function drawEntitySprites(entity) {
     //}
 
     canvas.push()
-    canvas.trans(entity.x + sprite.xo, entity.y + sprite.yo)
+    canvas.trans(
+      //entity.x + ((sprite.xo || 0) * sprite.sx || 1),
+      //entity.y + ((sprite.yo || 0) * sprite.sy || 1)
+      entity.x + (sprite.xo || 0),
+      entity.y + (sprite.yo || 0)
+    )
     canvas.rot(sprite.r || 0)
 
     // If the sprite has a color, apply it
