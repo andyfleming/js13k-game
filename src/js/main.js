@@ -135,6 +135,8 @@ var layers = [
 
 ]
 
+// TODO: consider removing unused letters
+// TODO: consider removing values that are consistent like Y:0 and H:5
 var TEXT = {
   ' ': [72,5,5,5],
   a: [72,0,5,5],
