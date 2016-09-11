@@ -22,7 +22,8 @@
     "indent": 1,
     "space-infix-ops": 1,
     "comma-spacing": 0,
-    "standard/array-bracket-even-spacing": 1
+    "standard/array-bracket-even-spacing": 1,
+    "operator-linebreak": 1
   },
   "globals": {
     "TC": false,
