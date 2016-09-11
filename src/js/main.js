@@ -86,7 +86,7 @@ var C_STATUS_POSTGAME = 3
  *
  * @type {number}
  */
-var GAME_STATUS = C_STATUS_MENU
+var gameStatus = C_STATUS_MENU
 
 // Layer "ids"
 var C_LAYER_WORLD       = 0
@@ -137,7 +137,7 @@ var TEXT = {
  * @returns {boolean}
  */
 function gameStatusIs(status) {
-  return (status === GAME_STATUS || status.indexOf(GAME_STATUS) !== -1)
+  return (status === gameStatus || status.indexOf(gameStatus) !== -1)
 }
 
 //function colliding(entity1, entity2) {
@@ -323,7 +323,6 @@ function createRaindrop() {
 
     // Update function
     function() {
-      var timewarp = false // TODO: set up in global game state
       this.x += xSpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
       this.y += ySpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
 
@@ -484,7 +483,7 @@ function startNewGame() {
   console.log('startNewGame() called')
 
   // Set game status...
-  GAME_STATUS = C_STATUS_PLAYING
+  gameStatus = C_STATUS_PLAYING
 
   // Reset all the state
 
