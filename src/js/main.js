@@ -255,9 +255,6 @@ function createHero() {
     [
       // Main hero sprite
       {
-        // flipped
-        f: false,
-
         // frameset
         fs: [
 
