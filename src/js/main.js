@@ -9,13 +9,42 @@ import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
  -----------------------------------------------------------------------------------------------------
  Everything rendered lives in this structure
  Layer > Entity > Sprite Stack > Sprite
+ -----------------------------------------------------------------------------------------------------
+ Everything is in one file. A few things could be split out but we are taking advantage of globals in
+ a number of places that would be costly to move.
  */
 
+// Function shortcuts (since minifier doesn't help with these specific ones):
+var addEvtListener = document.addEventListener
+var rand = Math.random
+var floor = Math.floor
+
+// Small utility functions
+function randInt(min, max) { return floor(rand() * (max - min + 1)) + min }
+
+// The tiniest canvas
 var canvas = TinyCanvas(document.getElementById('c'))
+
+// Simple frame count (increments on every frame)
 var frameCount = 0
 
+// Sprite sheet image+texture that gets loaded
 var spriteSheetImage = new Image()
 var spriteSheetTexture
+
+// Key state
+var keys = {}
+
+// Handle keys events
+addEvtListener('keydown', function(e) {
+  console.log(e.which + ' key DOWN')
+  keys[e.which] = true
+})
+
+addEvtListener('keyup', function(e) {
+  console.log(e.which + ' key UP')
+  keys[e.which] = false
+})
 
 // Game status constants
 var C_STATUS_MENU     = 0
@@ -24,7 +53,7 @@ var C_STATUS_PAUSED   = 2
 var C_STATUS_POSTGAME = 3
 
 /**
- * Game Status (state)
+ * Game Status (state). Keeps track of whether we are at the menu, playing, paused, post-game, etc
  *
  * @type {number}
  */
@@ -61,6 +90,17 @@ var layers = [
 
 ]
 
+/**
+ * Checks if game status is any of the statuses passed as an array
+ *
+ * @param {number|Array} status Status to check if any match current game status
+ *
+ * @returns {boolean}
+ */
+function gameStatusIs(status) {
+  return (status === GAME_STATUS || status.indexOf(GAME_STATUS) !== -1)
+}
+
 var EXAMPLE_SPRITE = {
 
   // X offset - should this be on the framesets?
@@ -91,7 +131,7 @@ var EXAMPLE_ENTITY = {
   hb: [0, 0, 200, 200],
 
   // sprite stack
-  ss: [],
+  s: [],
 
   f: false, // flipped (bool)
 
@@ -104,12 +144,28 @@ var EXAMPLE_ENTITY = {
 
 }
 
+/**
+ * Entities need to be able to "destroy" themselves. This creates a function they can store to do so.
+ *
+ * @param {number} layerIndex
+ * @param {number} entityIndex
+ *
+ * @returns {Function}
+ */
 function createFunctionToDestroyEntity(layerIndex, entityIndex) {
   return function() {
     layers[layerIndex][entityIndex] = null
   }
 }
 
+/**
+ * Create an entity (to establish a standard interface)
+ *
+ * @param {number} layerIndex
+ * @param {Array} hitboxCoords
+ * @param {Array} spriteStack
+ * @param {function} updateFunction
+ */
 function createEntity(layerIndex, hitboxCoords, spriteStack, updateFunction) {
   var newIndex = layers[layerIndex].length
   layers[layerIndex].push({
@@ -118,17 +174,6 @@ function createEntity(layerIndex, hitboxCoords, spriteStack, updateFunction) {
     u: updateFunction,
     d: createFunctionToDestroyEntity(layerIndex, newIndex)
   })
-}
-
-/**
- * Checks if game status is any of the statuses passed as an array
- *
- * @param {number|Array} status Status to check if any match current game status
- *
- * @returns {boolean}
- */
-function gameStatusIs(status) {
-  return (status === GAME_STATUS || status.indexOf(GAME_STATUS) !== -1)
 }
 
 function createHero() {
@@ -148,8 +193,6 @@ function updateEntity(entity) {
   if (!entity) {
     return
   }
-
-
 }
 
 function drawEntitySprites(entity) {
@@ -167,7 +210,7 @@ function drawEntitySprites(entity) {
   // FRAMESET_HERO_STANDING
 
   // Loop through the sprite stack for the entity and draw each
-  entity.ss.forEach(function(sprite) {
+  entity.s.forEach(function(sprite) {
 
     canvas.push()
     canvas.trans(sprite.x, sprite.y)
@@ -230,11 +273,14 @@ function loop() {
 // Initialize "app"
 // ---------------------------------------------------------
 
+// Load the sprite sheet. Once it's loaded, that's how we know we are ready to rock!
 spriteSheetImage.src    = 's.png'
 spriteSheetImage.onload = function() {
+
+  // When the image loads, create the sprite sheet texture
   spriteSheetTexture = CreateTexture(canvas.g, spriteSheetImage, spriteSheetImage.width, spriteSheetImage.height)
 
-  // Setup
+  // Set the canvas background
   canvas.bkg(0.133, 0.125, 0.204)
 
   // Create Hero
