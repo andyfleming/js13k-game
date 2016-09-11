@@ -42,6 +42,10 @@ var frameCount = 0
 var spriteSheetImage = new Image()
 var spriteSheetTexture
 
+// Hero and World Settings
+var C_WORLD_GRAVITY = 0.5
+var C_HERO_MAX_WALK_SPEED = 4
+
 // Key state
 var keys = {}
 
@@ -82,7 +86,12 @@ var C_STATUS_POSTGAME = 3
  *
  * @type {number}
  */
-var GAME_STATUS = C_STATUS_MENU
+var gameStatus = C_STATUS_MENU
+
+// Other game state
+var timewarp = false
+var score
+var heatlh
 
 // Layer "ids"
 var C_LAYER_WORLD       = 0
@@ -153,7 +162,7 @@ var TEXT = {
  * @returns {boolean}
  */
 function gameStatusIs(status) {
-  return (status === GAME_STATUS || status.indexOf(GAME_STATUS) !== -1)
+  return (status === gameStatus || status.indexOf(gameStatus) !== -1)
 }
 
 //function colliding(entity1, entity2) {
@@ -266,13 +275,6 @@ function createHero() {
     [
       // Main hero sprite
       {
-        // TODO: abstract defaults for offset to createSprite call?
-        xo: 0,
-        yo: 0,
-
-        // flipped
-        f: false,
-
         // frameset
         fs: [
 
@@ -290,10 +292,10 @@ function createHero() {
     // Update function
     function() {
       if (keys[C_KEY_MOVE_RIGHT]) {
-        this.x += 3
+        this.x += C_HERO_MAX_WALK_SPEED
         this.s[0].f = false // flipped => false
       } else if (keys[C_KEY_MOVE_LEFT]) {
-        this.x -= 3
+        this.x -= C_HERO_MAX_WALK_SPEED
         this.s[0].f = true // flipped => true
       }
     }
@@ -327,9 +329,8 @@ function createRaindrop() {
       // droplet sprite
       {
         // current frame
-        c: 0x99E6B48E,
-        xo: 0,
-        yo: 0,
+        c: 0x77E6B48E,
+        sy: length,
         r: rotation,
         f: false,
         fs: [[[1012, 0, 1, 1]]]
@@ -338,7 +339,6 @@ function createRaindrop() {
 
     // Update function
     function() {
-      var timewarp = false // TODO: set up in global game state
       this.x += xSpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
       this.y += ySpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
 
@@ -420,7 +420,12 @@ function drawEntitySprites(entity) {
     //}
 
     canvas.push()
-    canvas.trans(entity.x + sprite.xo, entity.y + sprite.yo)
+    canvas.trans(
+      //entity.x + ((sprite.xo || 0) * sprite.sx || 1),
+      //entity.y + ((sprite.yo || 0) * sprite.sy || 1)
+      entity.x + (sprite.xo || 0),
+      entity.y + (sprite.yo || 0)
+    )
     canvas.rot(sprite.r || 0)
 
     // If the sprite has a color, apply it
@@ -479,7 +484,7 @@ function startNewGame() {
   console.log('startNewGame() called')
 
   // Set game status...
-  GAME_STATUS = C_STATUS_PLAYING
+  gameStatus = C_STATUS_PLAYING
 
   // Reset all the state
 
@@ -519,6 +524,8 @@ function update() {
       // TODO: resume game
     }
   }
+
+  timewarp = !!keys[C_KEY_TIMEWARP]
 
   layers.forEach(function(group) {
     group.forEach(updateEntity)
