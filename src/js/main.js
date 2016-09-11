@@ -12,6 +12,14 @@ import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
  -----------------------------------------------------------------------------------------------------
  Everything is in one file. A few things could be split out but we are taking advantage of globals in
  a number of places that would be costly to move.
+ -----------------------------------------------------------------------------------------------------
+ There are a lot of functions and top-level variables instead of object properties. This is because
+ object property names don't get renamed in minification.
+ -----------------------------------------------------------------------------------------------------
+ The majority of game logic lives in 3 places:
+ - Entity "update" functions
+ - Collision handlers
+ - game-state loop checks (for things like lose-condition, round management, etc)
  */
 
 // Function shortcuts (since minifier doesn't help with these specific ones):
@@ -45,6 +53,10 @@ addEvtListener('keyup', function(e) {
   console.log(e.which + ' key UP')
   keys[e.which] = false
 })
+
+// Keyboard controls
+var C_KEY_START_GAME = 13 // return
+var C_KEY_PAUSE_GAME = 27 // esc
 
 // Game status constants
 var C_STATUS_MENU     = 0
@@ -101,6 +113,17 @@ function gameStatusIs(status) {
   return (status === GAME_STATUS || status.indexOf(GAME_STATUS) !== -1)
 }
 
+//function colliding(entity1, entity2) {
+//
+//  return (
+//    s1.posX < s2.posX + s2.width &&
+//    s1.posX + s1.width > s2.posX &&
+//    s1.posY < s2.posY + s2.height &&
+//    s1.height + s1.posY > s2.posY
+//  )
+//
+//}
+
 var EXAMPLE_SPRITE = {
 
   // X offset - should this be on the framesets?
@@ -128,6 +151,9 @@ var EXAMPLE_ENTITY = {
 
   // hitbox: [x1, y1, x2, y2]
   // hitbox changes independently of sprites
+  // hitbox is relative to sprite
+  // If the origin is center, it could be something like:
+  // [-100, -100, 100, 100]
   hb: [0, 0, 200, 200],
 
   // sprite stack
@@ -162,13 +188,17 @@ function createFunctionToDestroyEntity(layerIndex, entityIndex) {
  * Create an entity (to establish a standard interface)
  *
  * @param {number} layerIndex
- * @param {Array} hitboxCoords
+ * @param {number} x initial origin position
+ * @param {number} y initial origin position
+ * @param {Array} hitboxCoords (relative to origin point)
  * @param {Array} spriteStack
  * @param {function} updateFunction
  */
-function createEntity(layerIndex, hitboxCoords, spriteStack, updateFunction) {
+function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunction) {
   var newIndex = layers[layerIndex].length
   layers[layerIndex].push({
+    x: x,
+    y: y,
     h: hitboxCoords,
     s: spriteStack,
     u: updateFunction,
@@ -177,12 +207,46 @@ function createEntity(layerIndex, hitboxCoords, spriteStack, updateFunction) {
 }
 
 function createHero() {
+  console.log('createHero() called')
+
   createEntity(
     C_LAYER_HERO,
+
+    // origin (x, y)
+    100,
+    100,
+
+    // Hitbox
     [0, 0, 16, 20],
+
+    // Sprite stack
     [
-      []
+      // Main hero sprite
+      {
+        // current frame
+        c: 0,
+
+        // TODO: abstract defaults for offset to createSprite call?
+        xo: 0,
+        yo: 0,
+
+        f: false,
+
+        // frameset
+        fs: [
+
+          // Standing "frameset" (only one frame)
+          [[902, 0, 18, 24]],
+
+          // Walking frameset (example)
+          [[0, 0, 1, 1], [1, 0, 1, 1], [0, 0, 1, 1]]
+        ]
+      },
+
+      // TODO, dashing decorator sprite
     ],
+
+    // Update function
     function() {
 
     }
@@ -213,8 +277,8 @@ function drawEntitySprites(entity) {
   entity.s.forEach(function(sprite) {
 
     canvas.push()
-    canvas.trans(sprite.x, sprite.y)
-    canvas.rot(sprite.r)
+    //canvas.trans(sprite.x, sprite.y)
+    //canvas.rot(sprite.r)
 
     // If the sprite has a color, apply it
     if (sprite.c) {
@@ -222,7 +286,7 @@ function drawEntitySprites(entity) {
     }
 
     var currentFrame = 0
-    var frame = [0, 0, 16, 16]
+    var frame = [902, 0, 18, 24]
     var x1 = frame[0] / spriteSheetTexture.width
     var x2 = (frame[0] + frame[2]) / spriteSheetTexture.width
 
@@ -247,12 +311,56 @@ function drawEntitySprites(entity) {
 
 }
 
+function startNewGame() {
+  console.log('startNewGame() called')
+
+  // Set game status...
+  GAME_STATUS = C_STATUS_PLAYING
+
+  // Reset all the state
+
+  // Health to 100%
+
+  // Reset score
+
+  // Current round to 0/1
+
+  // etc, etc
+
+  createHero()
+
+}
+
+function endGame() {
+
+  // Reset per-game layers+entities (chained intentionally)
+  layers[C_LAYER_ENEMIES]
+    = layers[C_LAYER_HERO]
+    = layers[C_LAYER_PROJECTILES]
+    = []
+}
+
+// OMG, code pathz so hot right now
 function update() {
+
+  if (gameStatusIs([C_STATUS_MENU, C_STATUS_POSTGAME]) && keys[C_KEY_START_GAME]) {
+    startNewGame()
+  }
+
+  if (keys[C_KEY_PAUSE_GAME]) {
+    if (gameStatusIs(C_STATUS_PLAYING)) {
+      // TODO: pause game
+    } else if (gameStatusIs(C_STATUS_PAUSED)) {
+      // TODO: resume game
+    }
+  }
+
   layers.forEach(function(group) {
     group.forEach(updateEntity)
   })
 }
 
+// Let's draw pretty pictures
 function draw() {
   layers.forEach(function(group) {
     group.forEach(drawEntitySprites)
@@ -282,9 +390,6 @@ spriteSheetImage.onload = function() {
 
   // Set the canvas background
   canvas.bkg(0.133, 0.125, 0.204)
-
-  // Create Hero
-  createHero()
 
   // Start loop
   loop()
