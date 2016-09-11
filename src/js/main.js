@@ -314,6 +314,7 @@ function createRaindrop() {
         c: 0x99E6B48E,
         xo: 0,
         yo: 0,
+        sy: length,
         r: rotation,
         f: false,
         fs: [[[1012, 0, 1, 1]]]
