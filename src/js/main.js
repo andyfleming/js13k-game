@@ -237,12 +237,13 @@ function createHero() {
       // Main hero sprite
       {
         // current frame
-        c: 0,
+        cf: 0,
 
         // TODO: abstract defaults for offset to createSprite call?
         xo: 0,
         yo: 0,
 
+        // flipped
         f: false,
 
         // frameset
@@ -273,11 +274,10 @@ function createHero() {
 }
 
 function createRaindrop() {
-  console.log('createRain() called')
+  console.log('createRaindrop() called')
 
-  var generateAtTop = true
   var x = (rand() * (canvasWidth + 600)) - 300
-  var y = (generateAtTop) ? 0 : rand() * canvasHeight
+  var y =  rand() * canvasHeight
   var xSpeed = -3 + rand() * 3 + 1.5 + C_RAIN_ANGLE
   var ySpeed = randInt(4, 9)
   var length = randInt(4, 16)
@@ -300,9 +300,10 @@ function createRaindrop() {
       // droplet sprite
       {
         // current frame
-        c: 0,
+        c: 0x99E6B48E,
         xo: 0,
         yo: 0,
+        r: rotation,
         f: false,
         fs: [[[1012, 0, 1, 1]]]
       }
@@ -316,11 +317,20 @@ function createRaindrop() {
 
       // If drop is out of range, regenerate it
       // TODO: update
-      //if (drop.y > canvasHeight) {
-      //  drops[index] = generateDrop(canvasWidth, canvasHeight, true)
-      //}
+      if (this.y > canvasHeight) {
+        this.x = (rand() * (canvasWidth + 600)) - 300
+        xSpeed = -3 + rand() * 3 + 1.5 + C_RAIN_ANGLE
+        ySpeed = randInt(4, 9)
+        rotation = Math.atan2(length, xSpeed) + 1.5708
+
+        this.y = 0
+      }
     }
   )
+}
+
+function createText(text, x, y, centered) {
+  
 }
 
 function updateEntity(entity) {
@@ -349,8 +359,8 @@ function drawEntitySprites(entity) {
   entity.s.forEach(function(sprite) {
 
     canvas.push()
-    //canvas.trans(sprite.x, sprite.y)
-    //canvas.rot(sprite.r)
+    canvas.trans(entity.x + sprite.xo, entity.y + sprite.yo)
+    canvas.rot(sprite.r)
 
     // If the sprite has a color, apply it
     if (sprite.c) {
@@ -359,15 +369,16 @@ function drawEntitySprites(entity) {
 
     var currentFrame = 0
     var frame = [902, 0, 18, 24]
+    //var frame = [1012, 0, 1, 1]
     var x1 = frame[0] / spriteSheetTexture.width
     var x2 = (frame[0] + frame[2]) / spriteSheetTexture.width
 
     canvas.img(
       spriteSheetTexture,
-      entity.x + sprite.xo,
-      entity.y + sprite.yo,
+      0,
+      0,
       frame[2],
-      frame[3],
+      frame[3] + 10, // NOTE: this is where y-scale needs to happen
       sprite.f ? x2 : x1,       // sprite location in sheet (draw backwards if "f"/flipped)
       frame[1] / spriteSheetTexture.height,
       sprite.f ? x1 : x2,
@@ -434,8 +445,8 @@ function update() {
 
 // Let's draw pretty pictures
 function draw() {
-  layers.forEach(function(group) {
-    group.forEach(drawEntitySprites)
+  layers.forEach(function(entity) {
+    entity.forEach(drawEntitySprites)
   })
 }
 
@@ -465,7 +476,7 @@ spriteSheetImage.onload = function() {
 
 
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
-    createRaindrop()
+    //createRaindrop()
   }
 
 
