@@ -115,6 +115,16 @@ var layers = [
 
 ]
 
+var TEXT = {
+  h: [],
+  e: [],
+  l: [],
+  o: [],
+  w: [],
+  r: [],
+  d: []
+}
+
 /**
  * Checks if game status is any of the statuses passed as an array
  *
@@ -203,8 +213,8 @@ function createFunctionToDestroyEntity(layerIndex, entityIndex) {
  * @param {number} layerIndex
  * @param {number} x initial origin position
  * @param {number} y initial origin position
- * @param {Array} hitboxCoords (relative to origin point)
- * @param {Array} spriteStack
+ * @param {number[] hitboxCoords (relative to origin point)
+ * @param {object[]} spriteStack
  * @param {function} updateFunction
  */
 function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunction) {
@@ -326,8 +336,57 @@ function createRaindrop() {
   )
 }
 
-function createText(text, x, y, centered) {
+function createText(text, x, y) {
+  console.log('writing()', text)
 
+
+  createEntity(
+    C_LAYER_UI,
+
+    // origin
+    x, y,
+
+    // hitbox
+    [0, 0, 1, 1],
+
+    // sprite stack
+    [
+      {
+        xo: 0,
+        yo: 0,
+
+        cf: 0,
+
+        sx: 1,
+        sy: 1,
+
+        f: false,
+
+        fs: [
+          [[72, 0, 5, 5]]
+        ]
+      },
+      {
+        xo: 10,
+        yo: 0,
+
+        cf: 0,
+
+        sx: 2,
+        sy: 2,
+
+        f: false,
+
+        fs: [
+          [[72, 0, 5, 5]]
+        ]
+      }
+    ],
+
+    function() {
+
+    }
+  )
 }
 
 function updateEntity(entity) {
@@ -369,6 +428,10 @@ function drawEntitySprites(entity) {
       canvas.col = sprite.c
     }
 
+    if (sprite.sx || sprite.sy) {
+      canvas.scale(sprite.sx || 1, sprite.sy || 1)
+    }
+
     //var currentFrame = 0
     //var frame = [902, 0, 18, 24]
     //var frame = [1012, 0, 1, 1]
@@ -403,7 +466,6 @@ function drawEntitySprites(entity) {
       sprite.f ? x1 : x2,
       (frame[1] + frame[3]) / spriteSheetTexture.height
     )
-
     // Reset the color
     canvas.col = 0xFFFFFFFF
 
@@ -430,6 +492,7 @@ function startNewGame() {
   // etc, etc
 
   createHero()
+  createText('Hello World', 90, 90)
 
 }
 
