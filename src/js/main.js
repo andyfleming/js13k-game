@@ -316,7 +316,7 @@ function createRaindrop() {
       // droplet sprite
       {
         // current frame
-        c: 0x99E6B48E,
+        c: 0x77E6B48E,
         xo: 0,
         yo: 0,
         sy: length,
