@@ -504,9 +504,9 @@ function createText(layer, text, x, y, scale, duration, delay) {
       }),
 
     function() {
-      if (frameCount < animStart) return
-      if (frameCount > animEnd) return
-      this.y = easeInOutQuint(frameCount - animStart, startingY, endY - startingY, duration)
+      if (frameCount <= animStart) return
+      if (frameCount >= animEnd) return
+      this.y = floor(easeInOutQuint(frameCount - animStart, startingY, endY - startingY, duration))
     }
   )
 }
