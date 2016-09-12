@@ -323,7 +323,44 @@ function createHero() {
   )
 }
 
-function createHealthBar() {}
+function createHealthBar() {
+  console.log('createHealthBar() called')
+
+  createEntity(
+    C_LAYER_UI_IN_GAME,
+
+    // origin (x, y)
+    40,
+    11,
+
+    // Hitbox
+    null,
+
+    // Sprite stack
+    [
+      // background bar (white)
+      {
+        xo: -1,
+        yo: -1,
+        fs: [[[1012, 0, 1, 1]]],
+        sx: C_UI_HEALTH_BAR_WIDTH + 2,
+        sy: C_UI_HEALTH_BAR_HEIGHT + 2
+      },
+
+      // inner health bar (red)
+      {
+        fs: [[[1011, 0, 1, 1]]],
+        sx: C_UI_HEALTH_BAR_WIDTH,
+        sy: C_UI_HEALTH_BAR_HEIGHT
+      }
+    ],
+
+    // Update function
+    function() {
+      this.s[1].sx = floor((health/C_MAX_HEALTH) * C_UI_HEALTH_BAR_WIDTH)
+    }
+  )
+}
 
 function createRaindrop() {
   console.log('createRaindrop() called')
