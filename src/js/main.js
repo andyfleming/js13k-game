@@ -198,7 +198,7 @@ var TEXT = {
  * @returns {boolean}
  */
 function gameStatusIs(status) {
-  return (status === gameStatus || status.indexOf(gameStatus) !== -1)
+  return (status === gameStatus || (typeof status === typeof [] && status.indexOf(gameStatus) !== -1))
 }
 
 //function colliding(entity1, entity2) {
@@ -269,7 +269,7 @@ function createHero() {
         fs: [
 
           // Standing "frameset" (only one frame)
-          [[902, 0, 18, 24]],
+          [[74, 0, 18, 24]],
 
           // Walking frameset (example)
           [[0, 0, 1, 1], [1, 0, 1, 1], [0, 0, 1, 1]]
@@ -311,14 +311,14 @@ function createHealthBar() {
       {
         xo: -1,
         yo: -1,
-        fs: [[[1012, 0, 1, 1]]],
+        fs: [[[1, 0, 1, 1]]],
         sx: C_UI_HEALTH_BAR_WIDTH + 2,
         sy: C_UI_HEALTH_BAR_HEIGHT + 2
       },
 
       // inner health bar (red)
       {
-        fs: [[[1011, 0, 1, 1]]],
+        fs: [[[0, 0, 1, 1]]],
         sx: C_UI_HEALTH_BAR_WIDTH,
         sy: C_UI_HEALTH_BAR_HEIGHT
       }
@@ -362,7 +362,7 @@ function createRaindrop() {
         sy: length,
         r: rotation,
         f: false,
-        fs: [[[1012, 0, 1, 1]]]
+        fs: [[[2, 0, 1, 1]]]
       }
     ],
 
@@ -565,11 +565,10 @@ function lose() {
   console.log('game over!')
 
   // Reset per-game layers+entities (chained intentionally)
-  layers[C_LAYER_ENEMIES]
-    = layers[C_LAYER_HERO]
-    = layers[C_LAYER_PROJECTILES]
-    = layers[C_LAYER_UI_IN_GAME]
-    = []
+  layers[C_LAYER_ENEMIES] = []
+  layers[C_LAYER_HERO] = []
+  layers[C_LAYER_PROJECTILES] = []
+  layers[C_LAYER_UI_IN_GAME] = []
 
   // Set game status to post-game screen
   gameStatus = C_STATUS_POSTGAME
@@ -607,22 +606,28 @@ function update() {
 
   // TODO: make sure certain checks/updates only run during GAME_ACTIVE_STATUS
 
-  // Check for shooting
-  // TODO: add multiple weapon types?
-  if (keys[C_KEY_SHOOT]) {
-    if (!shooting) {
-      //var startX = self.sprite.posX + ((self.lastXDirection === 'l') ? 0 : 8)
-      //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
-      console.log('Spawn bullet!')
-      fx.playShoot()
-      shooting = true
+  // Updates that should only happen in game:
+  if (gameStatusIs(C_STATUS_PLAYING)) {
+
+    // Check for shooting
+    // TODO: add multiple weapon types?
+    if (keys[C_KEY_SHOOT]) {
+      if (!shooting) {
+        //var startX = self.sprite.posX + ((self.lastXDirection === 'l') ? 0 : 8)
+        //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
+        console.log('Spawn bullet!')
+        fx.playShoot()
+        shooting = true
+      }
+    } else {
+      shooting = false
     }
-  } else {
-    shooting = false
+
+    // Check for timewarp
+    timewarp = !!keys[C_KEY_TIMEWARP]
   }
 
-  // Check for timewarp
-  timewarp = !!keys[C_KEY_TIMEWARP]
+  console.log(layers)
 
   layers.forEach(function(group) {
     group.forEach(updateEntity)
@@ -659,7 +664,6 @@ spriteSheetImage.onload = function() {
 
   // Set the canvas background
   canvas.bkg(0.133, 0.125, 0.204)
-
 
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
     createRaindrop()
