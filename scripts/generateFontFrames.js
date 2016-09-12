@@ -18,7 +18,7 @@ var TEXT = {
   'f': [25,5],
   'g': [30,5],
   'h': [35,5],
-  'i': [41,3],
+  'i': [41,2],
   'j': [43,5],
   'k': [48,5],
   'l': [53,5],
@@ -39,7 +39,7 @@ var TEXT = {
 }
 
 var char = ''
-var offset = 315
+var offset = 445
 
 console.log('var TEXT = {')
 for (char in TEXT) {
