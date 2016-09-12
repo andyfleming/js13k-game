@@ -146,33 +146,43 @@ var layers = [
 // TODO: consider removing unused letters
 // TODO: consider removing values that are consistent like Y:0 and H:5
 var TEXT = {
-  ' ': [72,5,5,5],
-  a: [72,0,5,5],
-  b: [77,0,5,5],
-  c: [82,0,5,5],
-  d: [87,0,5,5],
-  e: [92,0,5,5],
-  f: [97,0,5,5],
-  g: [102,0,5,5],
-  h: [107,0,5,5],
-  i: [198, 0, 3, 5],
-  j: [112,0,5,5],
-  k: [117,0,5,5],
-  l: [122,0,5,5],
-  m: [186, 0, 6, 5],
-  n: [180, 0, 6, 5],
-  o: [127,0,5,5],
-  p: [132,0,5,5],
-  q: [137,0,5,5],
-  r: [142,0,5,5],
-  s: [147,0,5,5],
-  t: [152,0,5,5],
-  u: [157,0,5,5],
-  v: [162, 0, 6, 5],
-  w: [168, 0, 6, 5],
-  x: [174, 0, 6, 5],
-  y: [192, 0, 6, 5],
-  z: [192, 0, 6, 5],
+  '0': [495,5],
+  '1': [451,4],
+  '2': [455,5],
+  '3': [460,5],
+  '4': [465,5],
+  '5': [470,5],
+  '6': [475,5],
+  '7': [480,5],
+  '8': [485,5],
+  '9': [490,5],
+  ' ': [500,5],
+  a: [315,5],
+  b: [320,5],
+  c: [325,5],
+  d: [330,5],
+  e: [335,5],
+  f: [340,5],
+  g: [345,5],
+  h: [350,5],
+  i: [356,3],
+  j: [358,5],
+  k: [363,5],
+  l: [368,5],
+  n: [373,6],
+  m: [379,6],
+  o: [385,5],
+  p: [390,5],
+  q: [395,5],
+  r: [400,5],
+  s: [405,5],
+  t: [410,5],
+  u: [415,6],
+  v: [421,6],
+  w: [427,6],
+  x: [433,6],
+  y: [439,6],
+  z: [445,6],
 }
 
 /**
@@ -354,7 +364,7 @@ function createHealthBar() {
         sy: C_UI_HEALTH_BAR_HEIGHT
       }
     ],
-    
+
 
     // Update function
     function() {
@@ -433,16 +443,17 @@ function createText(layer, text, x, y, scale) {
     // sprite stack
     text.toLowerCase()
       .split('')
-      .map(function (letter) {
+      .map(function (char) {
+        var frame = TEXT[char]
         runningOffsetX += lastWidth * scale
-        lastWidth = TEXT[letter][2]
+        lastWidth = frame[1]
         return {
           xo: runningOffsetX,
           yo: 0,
           cf: 0,
           sx: scale,
           sy: scale,
-          fs: [[TEXT[letter]]]
+          fs: [[ [frame[0], 0, frame[1], 5] ]]
         }
       }),
 
