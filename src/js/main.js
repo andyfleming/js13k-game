@@ -74,7 +74,7 @@ var C_KEY_MOVE_RIGHT = 68 // d
 var C_KEY_JUMP = 74 // space
 var C_KEY_SHOOT = 73 // j
 var C_KEY_DASH = 75 // k
-var C_KEY_TIMEWARP = 16 // shift
+var C_KEY_STRAFE = 16 // shift
 
 // Rain configuration
 var C_RAIN_NUM_DROPS = 200
@@ -126,18 +126,19 @@ var jumpFramesLeft
 var C_FRAMESET_RED_PIXEL = [[[0, 0, 1, 1]]]
 var C_FRAMESET_WHITE_PIXEL = [[[1, 0, 1, 1]]]
 var C_FRAMESET_RAIN_PIXEL = [[[2, 0, 1, 1]]]
-var C_FRAMESET_BULLET = [
-    // flash
-    [[3, 0, 4, 4]],
-    [[7, 0, 4, 4]]
-  ]
-var C_FRAMESET_ROCKET = [
-    // rocket
-    [[11, 0, 10, 7]],
-    // plasma
-    [[21,0, 6, 6]]
+var C_FRAMESET_BULLET  = [
+  // flash
+  [[3, 0, 4, 4]],
+  // bullet
+  [[7, 0, 4, 4]]
 ]
-var C_FRAMESET_HERO = [
+var C_FRAMESET_ROCKET  = [
+  // rocket
+  [[11, 0, 10, 7]],
+  // plasma
+  [[21, 0, 6, 6]]
+]
+var C_FRAMESET_HERO    = [
 
   // Standing "frameset" (only one frame)
   [[204, 0, 18, 24]],
@@ -147,7 +148,7 @@ var C_FRAMESET_HERO = [
     [222, 0, 18, 24],
     [240, 0, 18, 24],
     [258, 0, 18, 24],
-    [276 , 0, 18, 24]
+    [276, 0, 18, 24]
   ]
 ]
 var C_FRAMESET_ENEMY_1 = [[
@@ -240,6 +241,24 @@ var TEXT = {
   y: [569,6],
   z: [575,6]
 }
+
+var roundNum
+var enemiesToDefeat
+var enemySpawnQueue
+var C_ENEMY_TYPE_BASIC_BITCH = 0
+var C_ENEMY_TYPE_MED_ENEMY = 1
+var C_ENEMY_TYPE_DRONE = 2
+
+// TODO: xy?
+// round > spawn queue > spawn event
+var C_ROUNDS = [
+  [
+    // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 3],
+    [C_ENEMY_TYPE_MED_ENEMY, 60, 1],
+    [C_ENEMY_TYPE_BASIC_BITCH, 120, 5]
+  ]
+]
 
 /**
  * Checks if game status is any of the statuses passed as an array
@@ -407,14 +426,14 @@ function createHero() {
       if (keys[C_KEY_MOVE_RIGHT]) {
         this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
-        if (!shooting) {
+        if (!keys[C_KEY_STRAFE]) {
           sprite.f = false // flipped => false
         }
         sprite.cfs = 1
       } else if (keys[C_KEY_MOVE_LEFT]) {
         this.x = max(0, this.x - C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
-        if (!shooting) {
+        if (!keys[C_KEY_STRAFE]) {
           sprite.f = true // flipped => true
         }
         sprite.cfs = 1
@@ -657,7 +676,7 @@ function createBullet(x, y, flipped) {
         cf: 0,
         cfs: 0,
         f: flipped,
-        fs: [[[7, 1, 2, 4]]]
+        fs: C_FRAMESET_BULLET
       }
     ],
     function() {
@@ -665,6 +684,31 @@ function createBullet(x, y, flipped) {
     }
   )
 }
+
+function createEnemyBasicBitch(x, y) {
+  createEntity(
+    C_LAYER_ENEMIES,
+    x,
+    y,
+    [0, 0, 2, 4],
+    [
+      {
+        cf: 0,
+        cfs: 0,
+        f: true,
+        fs: C_FRAMESET_ENEMY_1
+      }
+    ],
+    function() {
+      this.y = min(canvasHeight - 16, this.y + 10)
+    }
+  )
+}
+
+function createAnotherEnemy(x, y) {
+
+}
+
 
 function createMenu() {
   createText(C_LAYER_UI_IN_MENU, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 ,20)
@@ -745,7 +789,7 @@ function drawEntitySprites(entity) {
     var frame = sprite.fs[sprite.cfs || 0][sprite.cf || 0]
 
 
-    if (frameCount % 2 === 0) {
+    if (frameCount % 4 === 0) {
       // check if we can increment or set back to 0
       if (frameCheck) sprite.cf = 0
       else sprite.cf++
@@ -773,6 +817,7 @@ function drawEntitySprites(entity) {
 
 }
 
+// createGame startGame createNew newGame
 function startNewGame() {
   console.log('startNewGame() called')
 
@@ -802,8 +847,10 @@ function startNewGame() {
   doubleJumpReady = false
   jumpFramesLeft = 0
 
-
   // Current round to 0/1
+  roundNum = 0
+  enemiesToDefeat = 0
+  enemySpawnQueue = []
 
   // etc, etc
 
@@ -858,6 +905,29 @@ function lose() {
 
 }
 
+// roundNum === 0
+function startNextRound() {
+
+  var fc = frameCount
+
+  if (C_ROUNDS.length > roundNum) {
+    // initializeEnemiesForRound
+    C_ROUNDS[roundNum].forEach(function(enemyGroup) {
+      enemiesToDefeat += enemyGroup[2]
+      enemySpawnQueue.push([enemyGroup[0], fc + enemyGroup[1], enemyGroup[2]])
+    })
+
+  } else {
+    // generateRandomEnemiesForNewRound
+
+  }
+
+  // Display Round X message
+
+  roundNum++
+
+}
+
 // OMG, code pathz so hot right now
 function update() {
 
@@ -882,8 +952,28 @@ function update() {
   // Updates that should only happen in game:
   if (gameStatusIs(C_STATUS_PLAYING)) {
 
+    if (enemiesToDefeat === 0) {
+      startNextRound()
+    } else {
+      // Check if there are any enemies ready to spawn?
+      // but only spawn one every 4th frame
+      if (frameCount % 15 === 0) {
+        var group = enemySpawnQueue[0]
+
+        if (frameCount > group[1]) {
+          if (group[2] === 0) {
+            // pop the group off
+          } else {
+            // spawn the type of enemy and decrement the count left of that group to spawn
+            [createEnemyBasicBitch, createAnotherEnemy][group[0]](500, 100)
+            group[2]--
+          }
+        }
+      }
+    }
+
     // Check for timewarp
-    timewarp = !!keys[C_KEY_TIMEWARP]
+    //timewarp = !!keys[C_KEY_TIMEWARP]
   }
 
   layers.forEach(function(group) {
