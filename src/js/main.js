@@ -86,6 +86,7 @@ var C_STARS_NUM = 200
 
 // Hero and World Settings
 var C_WORLD_GRAVITY = 0.5
+var C_BULLET_SPEED = 5
 var C_HERO_MAX_WALK_SPEED = 4
 var C_HERO_MAX_HEALTH = 1000
 var C_HERO_JUMP_LENGTH = 5 // in frames
@@ -388,6 +389,21 @@ function createHero() {
       var sprite = this.s[0]
       var onGround = (this.y >= 276)
 
+      // Check for shooting
+      // TODO: add multiple weapon types?
+      if (keys[C_KEY_SHOOT]) {
+        if (!shooting) {
+          var startX = this.x + ((sprite.f) ? 0 : 8)
+          //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
+          createBullet(startX, this.y + randInt(9, 11), sprite.f)
+          console.log('Spawn bullet!')
+          fx.playShoot()
+          shooting = true
+        }
+      } else {
+        shooting = false
+      }
+
       if (keys[C_KEY_MOVE_RIGHT]) {
         this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
@@ -628,6 +644,28 @@ function createText(layer, text, x, y, scale, duration, delay) {
   )
 }
 
+function createBullet(x, y, flipped) {
+  console.log('createBullet() called')
+
+  createEntity(
+    C_LAYER_BACKGROUND,
+    x,
+    y,
+    [0, 0, 2, 4],
+    [
+      {
+        cf: 0,
+        cfs: 0,
+        f: flipped,
+        fs: [[[7, 1, 2, 4]]]
+      }
+    ],
+    function() {
+      this.x += ((this.s[0].f) ? -1 : 1) * C_BULLET_SPEED
+    }
+  )
+}
+
 function createMenu() {
   createText(C_LAYER_UI_IN_MENU, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 ,20)
   createText(C_LAYER_UI_IN_MENU, 't00 powerful', 310, 30, 2, 120, 80)
@@ -843,20 +881,6 @@ function update() {
 
   // Updates that should only happen in game:
   if (gameStatusIs(C_STATUS_PLAYING)) {
-
-    // Check for shooting
-    // TODO: add multiple weapon types?
-    if (keys[C_KEY_SHOOT]) {
-      if (!shooting) {
-        //var startX = self.sprite.posX + ((self.lastXDirection === 'l') ? 0 : 8)
-        //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
-        console.log('Spawn bullet!')
-        fx.playShoot()
-        shooting = true
-      }
-    } else {
-      shooting = false
-    }
 
     // Check for timewarp
     timewarp = !!keys[C_KEY_TIMEWARP]
