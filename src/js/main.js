@@ -590,6 +590,8 @@ function hurt(damage) {
 
 function lose() {
 
+  console.log('game over!')
+
   // Reset per-game layers+entities (chained intentionally)
   layers[C_LAYER_ENEMIES]
     = layers[C_LAYER_HERO]
@@ -597,7 +599,9 @@ function lose() {
     = layers[C_LAYER_UI_IN_GAME]
     = []
 
-  console.log('game over!')
+  // Set game status to post-game screen
+  gameStatus = C_STATUS_POSTGAME
+
   console.log('score', score)
 
   // Update high score if appropriate
@@ -605,6 +609,8 @@ function lose() {
     console.log('NEW HIGH SCORE!')
     localStorage[C_LS_HIGH_SCORE] = highScore = score
   }
+
+
 
 }
 
