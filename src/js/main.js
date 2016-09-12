@@ -582,15 +582,19 @@ function lose() {
 // OMG, code pathz so hot right now
 function update() {
 
+  // Check for start new game trigger
   if (gameStatusIs([C_STATUS_MENU, C_STATUS_POSTGAME]) && keys[C_KEY_START_GAME]) {
     startNewGame()
   }
 
+  // Check for pause trigger
   if (keys[C_KEY_PAUSE_GAME]) {
     if (gameStatusIs(C_STATUS_PLAYING)) {
       // TODO: pause game
+      console.log('PAUSE!')
     } else if (gameStatusIs(C_STATUS_PAUSED)) {
       // TODO: resume game
+      console.log('RESUME!')
     }
   }
 
