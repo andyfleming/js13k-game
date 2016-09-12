@@ -521,14 +521,14 @@ function createMenu() {
 }
 
 function createPostMenu(score, highScore) {
-  createText(C_LAYER_UI_IN_MENU, 'game over', 80, 60, 8, 120 ,20)
-  createText(C_LAYER_UI_IN_MENU, 'score', 40, 120, 4, 120 ,80)
-  createText(C_LAYER_UI_IN_MENU, score.toString(), 40, 150, 4, 120 ,80)
+  createText(C_LAYER_UI_IN_MENU, 'game over', 80, 60, 8, 30 ,0)
+  createText(C_LAYER_UI_IN_MENU, 'score', 40, 120, 4, 40 ,80)
+  createText(C_LAYER_UI_IN_MENU, score.toString(), 40, 150, 4, 40 ,80)
 
-  createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 120 ,160)
+  createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 40 ,160)
 
-  createText(C_LAYER_UI_IN_MENU, ((score >= highScore) ? 'new ' : '') + 'high score', 40, 220, 4, 120 ,100)
-  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 120 ,100)
+  createText(C_LAYER_UI_IN_MENU, ((score > highScore) ? 'new ' : '') + 'high score', 40, 220, 4, 40 ,100)
+  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 40 ,100)
 
 }
 
@@ -607,6 +607,9 @@ function drawEntitySprites(entity) {
 function startNewGame() {
   console.log('startNewGame() called')
 
+  // Clear the background (in case there is one left over from the last game)
+  layers[C_LAYER_BACKGROUND] = []
+
   // Clear the Menu UI layer
   layers[C_LAYER_UI_IN_MENU] = []
   layers[C_LAYER_UI_IN_GAME] = []
@@ -658,9 +661,9 @@ function hurt(damage) {
 function lose() {
 
   console.log('game over!')
+  timewarp = true
 
   // Reset per-game layers+entities (chained intentionally)
-  layers[C_LAYER_BACKGROUND] = []
   layers[C_LAYER_ENEMIES] = []
   layers[C_LAYER_HERO] = []
   layers[C_LAYER_PROJECTILES] = []
@@ -671,13 +674,14 @@ function lose() {
 
   console.log('score', score)
 
+  createPostMenu(score, highScore)
+
   // Update high score if appropriate
   if (score > highScore) {
-    console.log('NEW HIGH SCORE!')
     localStorage[C_LS_HIGH_SCORE] = highScore = score
   }
 
-  createPostMenu(score, highScore)
+
 }
 
 // OMG, code pathz so hot right now
