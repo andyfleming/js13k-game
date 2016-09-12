@@ -166,14 +166,15 @@ var C_FRAMESET_ENEMY_2 = [[
   [53, 0, 20, 18]
 ]]
 // Layer "ids"
-var C_LAYER_BACKGROUND  = 0
-var C_LAYER_WORLD       = 1
-var C_LAYER_ENEMIES     = 2
-var C_LAYER_HERO        = 3
-var C_LAYER_PROJECTILES = 4
-var C_LAYER_FOREGROUND  = 5
-var C_LAYER_UI_IN_GAME  = 6
-var C_LAYER_UI_IN_MENU  = 7
+var C_LAYER_BACKGROUND        = 0
+var C_LAYER_WORLD             = 1
+var C_LAYER_ENEMIES           = 2
+var C_LAYER_HERO              = 3
+var C_LAYER_ENEMY_PROJECTILES = 4
+var C_LAYER_HERO_PROJECTILES  = 5
+var C_LAYER_FOREGROUND        = 6
+var C_LAYER_UI_IN_GAME        = 7
+var C_LAYER_UI_IN_MENU        = 8
 
 // "Layers"
 var layers = [
@@ -190,7 +191,10 @@ var layers = [
   // hero
   [],
 
-  // projectiles
+  // enemy projectiles
+  [],
+
+  // hero projectiles
   [],
 
   // foreground
@@ -677,7 +681,7 @@ function createBullet(x, y, flipped) {
   console.log('createBullet() called')
 
   createEntity(
-    C_LAYER_BACKGROUND,
+    C_LAYER_HERO_PROJECTILES,
     x,
     y,
     [0, 0, 2, 4],
@@ -700,7 +704,7 @@ function createEnemyBasicBitch(x, y) {
     C_LAYER_ENEMIES,
     x,
     y,
-    [0, 0, 2, 4],
+    [0, 0, 16, 16],
     [
       {
         cf: 0,
@@ -734,7 +738,7 @@ function createEnemyMonkey(x, y) {
     C_LAYER_ENEMIES,
     x,
     y,
-    [0, 0, 2, 4],
+    [0, 0, 20, 18],
     [
       {
         cf: 0,
@@ -934,7 +938,8 @@ function lose() {
   // Reset per-game layers+entities (chained intentionally)
   layers[C_LAYER_ENEMIES] = []
   layers[C_LAYER_HERO] = []
-  layers[C_LAYER_PROJECTILES] = []
+  layers[C_LAYER_HERO_PROJECTILES] = []
+  layers[C_LAYER_ENEMY_PROJECTILES] = []
   layers[C_LAYER_UI_IN_GAME] = []
 
   // Set game status to post-game screen
@@ -970,7 +975,6 @@ function startNextRound() {
   }
 
   // Display Round X message
-
   roundNum++
 
 }
@@ -1030,6 +1034,8 @@ function update() {
   // Check for collisions
   layers[C_LAYER_ENEMIES].forEach(handleHeroEnemyCollision)
 
+  layers[C_LAYER_HERO_PROJECTILES].forEach(handleHeroBulletCollidingIntoEnemy)
+
 }
 
 function handleHeroEnemyCollision(enemy) {
@@ -1040,6 +1046,16 @@ function handleHeroEnemyCollision(enemy) {
   // TODO: handle collision
   console.log('enemy and hero colliding!')
   hurt(50)
+}
+
+function handleHeroBulletCollidingIntoEnemy(heroProjectile) {
+  layers[C_LAYER_ENEMIES].forEach(function(enemy) {
+    if (!enemy || !heroProjectile || !colliding(heroProjectile, enemy)) {
+      return
+    }
+    enemy.d()
+    heroProjectile.d()
+  })
 }
 
 // Let's draw pretty pictures
