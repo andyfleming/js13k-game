@@ -262,6 +262,8 @@ function createStars() {
   for (var i = 0; i < C_STARS_NUM; i++) {
     ss.push({
       c: 0x55FFFFFF,
+      cf: 0,
+      cfs: 0,
       xo: randInt(8, canvasWidth - 8),
       yo: randInt(8, canvasHeight - 8),
       fs: [[[1, 0, 1, 1]]]
@@ -291,6 +293,8 @@ function createBuildings() {
 
       ss.push({
         c: i ? 0xFF211515 : 0xFF0a0707,
+        cf: 0,
+        cfs: 0,
         xo: cursor,
         yo: canvasHeight - heightForBuilding,
         fs: [[[1, 0, 1, 1]]],
@@ -326,6 +330,8 @@ function createHero() {
     [
       // Main hero sprite
       {
+        cf: 0,
+        cfs: 0,
         // frameset
         fs: [
 
@@ -333,7 +339,12 @@ function createHero() {
           [[74, 0, 18, 24]],
 
           // Walking frameset (example)
-          [[0, 0, 1, 1], [1, 0, 1, 1], [0, 0, 1, 1]]
+          [
+            [92, 0, 18, 24],
+            [110, 0, 18, 24],
+            [128, 0, 18, 24],
+            [146, 0, 18, 24]
+          ]
         ]
       },
 
@@ -342,12 +353,18 @@ function createHero() {
 
     // Update function
     function() {
+      var sprite = this.s[0]
+      console.log('cf', sprite.cf)
       if (keys[C_KEY_MOVE_RIGHT]) {
+        sprite.cfs = 1
         this.x += C_HERO_MAX_WALK_SPEED
-        this.s[0].f = false // flipped => false
+        sprite.f = false // flipped => false
       } else if (keys[C_KEY_MOVE_LEFT]) {
+        sprite.cfs = 1
         this.x -= C_HERO_MAX_WALK_SPEED
-        this.s[0].f = true // flipped => true
+        sprite.f = true // flipped => true
+      } else {
+        sprite.cfs = 0
       }
     }
   )
@@ -370,6 +387,8 @@ function createHealthBar() {
     [
       // background bar (white)
       {
+        cf: 0,
+        cfs: 0,
         xo: -1,
         yo: -1,
         fs: [[[1, 0, 1, 1]]],
@@ -379,6 +398,8 @@ function createHealthBar() {
 
       // inner health bar (red)
       {
+        cf: 0,
+        cfs: 0,
         fs: [[[0, 0, 1, 1]]],
         sx: C_UI_HEALTH_BAR_WIDTH,
         sy: C_UI_HEALTH_BAR_HEIGHT
@@ -420,6 +441,8 @@ function createRaindrop() {
       {
         // current frame
         c: 0x77E6B48E,
+        cf: 0,
+        cfs: 0,
         sy: length,
         r: rotation,
         f: false,
@@ -494,9 +517,10 @@ function createText(layer, text, x, y, scale, duration, delay) {
         runningOffsetX += lastWidth * scale
         lastWidth = frame[1]
         return {
+          cf: 0,
+          cfs: 0,
           xo: runningOffsetX,
           yo: 0,
-          cf: 0,
           sx: scale,
           sy: scale,
           fs: [[[frame[0], 0, frame[1], 5]]]
@@ -580,10 +604,24 @@ function drawEntitySprites(entity) {
       canvas.scale(sprite.sx || 1, sprite.sy || 1)
     }
 
-    var frame = sprite.fs[0][0]
+    // check if frame is valid for frameset
+    var frameCheck = (sprite.cf > sprite.fs[sprite.cfs].length - 1)
+
+    // if frameset is invalid, set default
+    if (frameCheck) sprite.cf = 0
+
+    // set frame
+    var frame = sprite.fs[sprite.cfs || 0][sprite.cf || 0]
+
+
+    if (frameCount % 2 === 0) {
+      // check if we can increment or set back to 0
+      if (frameCheck) sprite.cf = 0
+      else sprite.cf++
+    }
+
     var x1 = frame[0] / spriteSheetTexture.width
     var x2 = (frame[0] + frame[2]) / spriteSheetTexture.width
-
     canvas.img(
       spriteSheetTexture,
       0,
