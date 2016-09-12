@@ -3,7 +3,8 @@ body {
     font-size: 10px;
     height: 540px;
     /*background: #1e1c31;*/
-    background: #28282d;
+    /*background: #28282d;*/
+    background: #07070a;
 }
 canvas{
     border: 2px solid #131223;
