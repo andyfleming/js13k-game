@@ -22,8 +22,8 @@ canvas{
 }
 
 #c {
-    width: 1050px;
-    height: 450px;
+    width: 1400px;
+    height: 600px;
     /*width: 700px;*/
     /*height: 300px;*/
     image-rendering: -moz-crisp-edges;         /* Firefox */
@@ -31,4 +31,11 @@ canvas{
     image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
     -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
     image-rendering: pixelated;
+}
+
+@media screen and (max-width: 1450px) {
+    #c {
+        width: 700px;
+        height: 300px;
+    }
 }
