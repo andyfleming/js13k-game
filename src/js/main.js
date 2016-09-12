@@ -103,8 +103,12 @@ var C_STATUS_POSTGAME = 3
  */
 var gameStatus = C_STATUS_MENU
 
+// Local Storage indexes
+var C_LS_HIGH_SCORE = 0
+
 // Other game state
 var timewarp = false
+var highScore = localStorage[C_LS_HIGH_SCORE] || 0
 var score
 var health
 
@@ -565,8 +569,8 @@ function startNewGame() {
   createHealthBar()
   createText(C_LAYER_UI_IN_GAME, 'dont go crazy andy', 90, 90, 2)
 
-
   // Temp: Fake dying
+  setTimeout(function() { score += 100 }, 1000)
   setTimeout(function() { hurt(50) }, 1000)
   setTimeout(function() { hurt(200) }, 2000)
   setTimeout(function() { hurt(500) }, 3000)
@@ -595,6 +599,13 @@ function lose() {
 
   console.log('game over!')
   console.log('score', score)
+
+  // Update high score if appropriate
+  if (score > highScore) {
+    console.log('NEW HIGH SCORE!')
+    localStorage[C_LS_HIGH_SCORE] = highScore = score
+  }
+
 }
 
 // OMG, code pathz so hot right now
@@ -654,7 +665,6 @@ spriteSheetImage.onload = function() {
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
     createRaindrop()
   }
-
 
   // Start loop
   loop()
