@@ -538,6 +538,7 @@ function startNewGame() {
   // etc, etc
 
   createHero()
+  createText(C_LAYER_UI_IN_GAME, 'HEALTH', 7, 11, 1)
   createHealthBar()
   createText(C_LAYER_UI_IN_GAME, 'dont go crazy andy', 90, 90, 2)
 
@@ -580,8 +581,6 @@ function lose() {
     console.log('NEW HIGH SCORE!')
     localStorage[C_LS_HIGH_SCORE] = highScore = score
   }
-
-
 
 }
 
