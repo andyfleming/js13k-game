@@ -115,6 +115,11 @@ var highScore = localStorage[C_LS_HIGH_SCORE] || 0
 var score
 var health
 var shooting
+var jumping
+var doubleJumpUsed
+var doubleJumpReady
+
+
 
 // Layer "ids"
 var C_LAYER_BACKGROUND  = 0
@@ -344,6 +349,9 @@ function createHero() {
 
     // Update function
     function() {
+
+      var onGround = (this.y < 266)
+
       if (keys[C_KEY_MOVE_RIGHT]) {
         this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
@@ -359,9 +367,25 @@ function createHero() {
       }
 
       // gravity via y velocity
-      this.yv = (this.y < 266) ? this.yv + C_WORLD_GRAVITY : 0
+      this.yv =  ? this.yv + C_WORLD_GRAVITY : 0
 
-      this.y += this.yv
+      if (onGround) {
+
+        // If we are on the ground, reset jumping state
+        jumping         = false
+        doubleJumpUsed  = false
+        doubleJumpReady = false
+
+        // Reset falling
+        this.yv = 0
+
+      } else {
+        // Apply gravity
+        this.yv + C_WORLD_GRAVITY
+        this.y += this.yv
+      }
+
+
 
     }
   )
@@ -642,6 +666,10 @@ function startNewGame() {
 
   // Reset hero state
   shooting = false
+  jumping = false
+  doubleJumpUsed  = false
+  doubleJumpReady = false
+
 
   // Current round to 0/1
 
