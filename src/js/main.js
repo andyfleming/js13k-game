@@ -81,6 +81,9 @@ var C_RAIN_NUM_DROPS = 200
 var C_RAIN_TIME_WARP_FACTOR = 0.2
 var C_RAIN_ANGLE = -4
 
+// Stars
+var C_STARS_NUM = 200
+
 // Hero and World Settings
 var C_WORLD_GRAVITY = 0.5
 var C_HERO_MAX_WALK_SPEED = 4
@@ -111,18 +114,23 @@ var timewarp = false
 var highScore = localStorage[C_LS_HIGH_SCORE] || 0
 var score
 var health
+var shooting
 
 // Layer "ids"
-var C_LAYER_WORLD       = 0
-var C_LAYER_ENEMIES     = 1
-var C_LAYER_HERO        = 2
-var C_LAYER_PROJECTILES = 3
-var C_LAYER_FOREGROUND  = 4
-var C_LAYER_UI_IN_GAME  = 5
-var C_LAYER_UI_IN_MENU  = 6
+var C_LAYER_BACKGROUND  = 0
+var C_LAYER_WORLD       = 1
+var C_LAYER_ENEMIES     = 2
+var C_LAYER_HERO        = 3
+var C_LAYER_PROJECTILES = 4
+var C_LAYER_FOREGROUND  = 5
+var C_LAYER_UI_IN_GAME  = 6
+var C_LAYER_UI_IN_MENU  = 7
 
 // "Layers"
 var layers = [
+
+  // background
+  [],
 
   // world
   [],
@@ -197,7 +205,7 @@ var TEXT = {
  * @returns {boolean}
  */
 function gameStatusIs(status) {
-  return (status === gameStatus || status.indexOf(gameStatus) !== -1)
+  return (status === gameStatus || (typeof status === typeof [] && status.indexOf(gameStatus) !== -1))
 }
 
 //function colliding(entity1, entity2) {
@@ -210,52 +218,6 @@ function gameStatusIs(status) {
 //  )
 //
 //}
-
-var EXAMPLE_SPRITE = {
-
-  // X offset - should this be on the framesets?
-  xo: 0,
-
-  // Y offset
-  yo: 0,
-
-  w: 10,
-  h: 10,
-
-  // Optional: color
-  c: 0xFF00FF00,
-
-  // Framesets
-  fs: [
-    [/* x */ 0, /* y */ 0, /* w */ 10, /* h */ 10, /* animation speed (optional) */ 1,]
-  ]
-
-}
-
-
-// This is an example that doesn't get compiled in, but is just here to document an interface
-var EXAMPLE_ENTITY = {
-
-  // hitbox: [x1, y1, x2, y2]
-  // hitbox changes independently of sprites
-  // hitbox is relative to sprite
-  // If the origin is center, it could be something like:
-  // [-100, -100, 100, 100]
-  hb: [0, 0, 200, 200],
-
-  // sprite stack
-  s: [],
-
-  f: false, // flipped (bool)
-
-  update: function() {}
-
-  // proposed: action stack - used for things like falling
-  //as: []
-
-  //d: destroyFunction
-
-}
 
 /**
  * Entities need to be able to "destroy" themselves. This creates a function they can store to do so.
@@ -293,6 +255,60 @@ function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunctio
   })
 }
 
+function createStars() {
+
+  var ss = []
+
+  for (var i = 0; i < C_STARS_NUM; i++) {
+    ss.push({
+      c: 0x55FFFFFF,
+      xo: randInt(8, canvasWidth - 8),
+      yo: randInt(8, canvasHeight - 8),
+      fs: [[[1, 0, 1, 1]]]
+    })
+  }
+
+  createEntity(C_LAYER_BACKGROUND, 0, 0, null, ss, function() {})
+
+}
+
+function createBuildings() {
+
+  var ss = []
+
+  // Two layers
+  for (var i = 0; i <= 1; i++) {
+
+    var cursor = -50
+
+    while (cursor < canvasWidth + 50) {
+
+      var widthForBuilding = randInt(20, 30)
+      var heightForBuilding = i ? randInt(50, 140) : randInt(150, 250)
+
+      // back layer: #07070a
+      // front layer: 151521
+
+      ss.push({
+        c: i ? 0xFF211515 : 0xFF0a0707,
+        xo: cursor,
+        yo: canvasHeight - heightForBuilding,
+        fs: [[[1, 0, 1, 1]]],
+        sx: widthForBuilding,
+        sy: heightForBuilding
+      })
+
+      // Move the cursor forward our building's width plus a random amount
+      //cursor += widthForBuilding + (rand() > 0.5 ? 0 : randInt(4, 20))
+      cursor += widthForBuilding + (i ? 0 : randInt(0, 30))
+    }
+
+  }
+
+  createEntity(C_LAYER_BACKGROUND, 0, 0, null, ss, function() {})
+
+}
+
 function createHero() {
   console.log('createHero() called')
 
@@ -301,7 +317,7 @@ function createHero() {
 
     // origin (x, y)
     100,
-    100,
+    276,
 
     // Hitbox
     [0, 0, 18, 24],
@@ -314,7 +330,7 @@ function createHero() {
         fs: [
 
           // Standing "frameset" (only one frame)
-          [[902, 0, 18, 24]],
+          [[74, 0, 18, 24]],
 
           // Walking frameset (example)
           [[0, 0, 1, 1], [1, 0, 1, 1], [0, 0, 1, 1]]
@@ -356,14 +372,14 @@ function createHealthBar() {
       {
         xo: -1,
         yo: -1,
-        fs: [[[1012, 0, 1, 1]]],
+        fs: [[[1, 0, 1, 1]]],
         sx: C_UI_HEALTH_BAR_WIDTH + 2,
         sy: C_UI_HEALTH_BAR_HEIGHT + 2
       },
 
       // inner health bar (red)
       {
-        fs: [[[1011, 0, 1, 1]]],
+        fs: [[[0, 0, 1, 1]]],
         sx: C_UI_HEALTH_BAR_WIDTH,
         sy: C_UI_HEALTH_BAR_HEIGHT
       }
@@ -407,7 +423,7 @@ function createRaindrop() {
         sy: length,
         r: rotation,
         f: false,
-        fs: [[[1012, 0, 1, 1]]]
+        fs: [[[2, 0, 1, 1]]]
       }
     ],
 
@@ -552,28 +568,9 @@ function drawEntitySprites(entity) {
       canvas.scale(sprite.sx || 1, sprite.sy || 1)
     }
 
-    //var currentFrame = 0
-    //var frame = [902, 0, 18, 24]
-    //var frame = [1012, 0, 1, 1]
     var frame = sprite.fs[0][0]
-    //if (frameCount % 3 === 0) {
-    //  console.log(frame)
-    //}
     var x1 = frame[0] / spriteSheetTexture.width
     var x2 = (frame[0] + frame[2]) / spriteSheetTexture.width
-
-    //if (frameCount % 10 === 0) {
-    //  console.log([
-    //    0,
-    //    0,
-    //    frame[2],
-    //    frame[3], // NOTE: this is where y-scale needs to happen
-    //    sprite.f ? x2 : x1,       // sprite location in sheet (draw backwards if "f"/flipped)
-    //    frame[1] / spriteSheetTexture.height,
-    //    sprite.f ? x1 : x2,
-    //    (frame[1] + frame[3]) / spriteSheetTexture.height
-    //  ])
-    //}
 
     canvas.img(
       spriteSheetTexture,
@@ -613,11 +610,20 @@ function startNewGame() {
   // Reset score
   score = 0
 
+  // Reset timewarp
+  timewarp = false
+
+  // Reset hero state
+  shooting = false
+
   // Current round to 0/1
 
   // etc, etc
 
+  createStars()
+  createBuildings()
   createHero()
+  createText(C_LAYER_UI_IN_GAME, 'HEALTH', 7, 11, 1)
   createHealthBar()
 
   // Temp: Fake dying
@@ -644,11 +650,11 @@ function lose() {
   console.log('game over!')
 
   // Reset per-game layers+entities (chained intentionally)
-  layers[C_LAYER_ENEMIES]
-    = layers[C_LAYER_HERO]
-    = layers[C_LAYER_PROJECTILES]
-    = layers[C_LAYER_UI_IN_GAME]
-    = []
+  layers[C_LAYER_BACKGROUND] = []
+  layers[C_LAYER_ENEMIES] = []
+  layers[C_LAYER_HERO] = []
+  layers[C_LAYER_PROJECTILES] = []
+  layers[C_LAYER_UI_IN_GAME] = []
 
   // Set game status to post-game screen
   gameStatus = C_STATUS_POSTGAME
@@ -661,26 +667,49 @@ function lose() {
     localStorage[C_LS_HIGH_SCORE] = highScore = score
   }
 
-
-
 }
 
 // OMG, code pathz so hot right now
 function update() {
 
+  // Check for start new game trigger
   if (gameStatusIs([C_STATUS_MENU, C_STATUS_POSTGAME]) && keys[C_KEY_START_GAME]) {
     startNewGame()
   }
 
+  // Check for pause trigger
   if (keys[C_KEY_PAUSE_GAME]) {
     if (gameStatusIs(C_STATUS_PLAYING)) {
       // TODO: pause game
+      console.log('PAUSE!')
     } else if (gameStatusIs(C_STATUS_PAUSED)) {
       // TODO: resume game
+      console.log('RESUME!')
     }
   }
 
-  timewarp = !!keys[C_KEY_TIMEWARP]
+  // TODO: make sure certain checks/updates only run during GAME_ACTIVE_STATUS
+
+  // Updates that should only happen in game:
+  if (gameStatusIs(C_STATUS_PLAYING)) {
+
+    // Check for shooting
+    // TODO: add multiple weapon types?
+    if (keys[C_KEY_SHOOT]) {
+      if (!shooting) {
+        //var startX = self.sprite.posX + ((self.lastXDirection === 'l') ? 0 : 8)
+        //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
+        console.log('Spawn bullet!')
+        fx.playShoot()
+        shooting = true
+      }
+    } else {
+      shooting = false
+    }
+
+    // Check for timewarp
+    timewarp = !!keys[C_KEY_TIMEWARP]
+  }
 
   layers.forEach(function(group) {
     group.forEach(updateEntity)
@@ -717,7 +746,6 @@ spriteSheetImage.onload = function() {
 
   // Set the canvas background
   canvas.bkg(0.133, 0.125, 0.204)
-
 
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
     createRaindrop()
