@@ -512,12 +512,12 @@ function createText(layer, text, x, y, scale, duration, delay) {
 }
 
 function createMenu() {
-  createText(C_LAYER_UI_IN_GAME, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 ,20)
-  createText(C_LAYER_UI_IN_GAME, 't00 powerful', 310, 30, 2, 120, 80)
-  createText(C_LAYER_UI_IN_GAME, 't00 sentient', 340, 50, 2, 120, 120)
-  createText(C_LAYER_UI_IN_GAME, 'so we we made an even stronger one to wipe them out', 90, 70, 2, 120, 200)
-  createText(C_LAYER_UI_IN_GAME, 'ROBO SLAYER 3ooo', 30, 100, 8, 120, 300)
-  createText(C_LAYER_UI_IN_GAME, 'press enter to begin', 40, 260, 4, 120, 460)
+  createText(C_LAYER_UI_IN_MENU, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 ,20)
+  createText(C_LAYER_UI_IN_MENU, 't00 powerful', 310, 30, 2, 120, 80)
+  createText(C_LAYER_UI_IN_MENU, 't00 sentient', 340, 50, 2, 120, 120)
+  createText(C_LAYER_UI_IN_MENU, 'so we we made an even stronger one to wipe them out', 90, 70, 2, 120, 200)
+  createText(C_LAYER_UI_IN_MENU, 'ROBO SLAYER 3ooo', 30, 100, 8, 120, 300)
+  createText(C_LAYER_UI_IN_MENU, 'press enter to begin', 40, 260, 4, 120, 460)
 }
 
 function updateEntity(entity) {
@@ -597,12 +597,10 @@ function startNewGame() {
 
   // Clear the Menu UI layer
   layers[C_LAYER_UI_IN_MENU] = []
+  layers[C_LAYER_UI_IN_GAME] = []
 
   // Set game status...
   gameStatus = C_STATUS_PLAYING
-
-  // Reset all the state
-  layers[C_LAYER_UI_IN_GAME] = []
 
   // Health to 100%
   health = C_MAX_HEALTH
