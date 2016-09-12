@@ -263,7 +263,7 @@ function createFunctionToDestroyEntity(layerIndex, entityIndex) {
  * @param {number} layerIndex
  * @param {number} x initial origin position
  * @param {number} y initial origin position
- * @param {number[] hitboxCoords (relative to origin point)
+ * @param {number[]} hitboxCoords (relative to origin point)
  * @param {object[]} spriteStack
  * @param {function} updateFunction
  */
