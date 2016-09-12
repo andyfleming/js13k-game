@@ -860,13 +860,6 @@ function startNewGame() {
   createText(C_LAYER_UI_IN_GAME, 'HEALTH', 7, 11, 1)
   createHealthBar()
 
-  // Temp: Fake dying
-  setTimeout(function() { score += 100 }, 1000)
-  setTimeout(function() { hurt(50) }, 1000)
-  setTimeout(function() { hurt(200) }, 2000)
-  setTimeout(function() { hurt(500) }, 3000)
-  setTimeout(function() { hurt(10000000) }, 4000)
-
 }
 
 function hurt(damage) {
