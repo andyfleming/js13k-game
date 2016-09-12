@@ -248,6 +248,8 @@ function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunctio
   layers[layerIndex].push({
     x: x,
     y: y,
+    xv: 0,
+    yv: 0,
     h: hitboxCoords,
     s: spriteStack,
     u: updateFunction,
@@ -317,7 +319,7 @@ function createHero() {
 
     // origin (x, y)
     100,
-    276,
+    100,
 
     // Hitbox
     [0, 0, 18, 24],
@@ -343,18 +345,24 @@ function createHero() {
     // Update function
     function() {
       if (keys[C_KEY_MOVE_RIGHT]) {
-        this.x += C_HERO_MAX_WALK_SPEED
+        this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
         if (!shooting) {
           this.s[0].f = false // flipped => false
         }
       } else if (keys[C_KEY_MOVE_LEFT]) {
-        this.x -= C_HERO_MAX_WALK_SPEED
+        this.x = max(0, this.x - C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
         if (!shooting) {
           this.s[0].f = true // flipped => true
         }
       }
+
+      // gravity via y velocity
+      this.yv = (this.y < 266) ? this.yv + C_WORLD_GRAVITY : 0
+
+      this.y += this.yv
+
     }
   )
 }
