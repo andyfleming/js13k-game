@@ -87,7 +87,9 @@ var C_STARS_NUM = 200
 // Hero and World Settings
 var C_WORLD_GRAVITY = 0.5
 var C_HERO_MAX_WALK_SPEED = 4
-var C_MAX_HEALTH = 1000
+var C_HERO_MAX_HEALTH = 1000
+var C_HERO_JUMP_LENGTH = 5 // in frames
+var C_HERO_JUMP_SPEED = 6
 
 // UI
 var C_UI_HEALTH_BAR_WIDTH = 150
@@ -115,6 +117,12 @@ var highScore = localStorage[C_LS_HIGH_SCORE] || 0
 var score
 var health
 var shooting
+var jumping
+var doubleJumpUsed
+var doubleJumpReady
+var jumpFramesLeft
+
+
 
 // Layer "ids"
 var C_LAYER_BACKGROUND  = 0
@@ -248,6 +256,8 @@ function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunctio
   layers[layerIndex].push({
     x: x,
     y: y,
+    xv: 0,
+    yv: 0,
     h: hitboxCoords,
     s: spriteStack,
     u: updateFunction,
@@ -321,7 +331,7 @@ function createHero() {
 
     // origin (x, y)
     100,
-    276,
+    100,
 
     // Hitbox
     [0, 0, 18, 24],
@@ -354,18 +364,88 @@ function createHero() {
     // Update function
     function() {
       var sprite = this.s[0]
-      console.log('cf', sprite.cf)
       if (keys[C_KEY_MOVE_RIGHT]) {
         sprite.cfs = 1
         this.x += C_HERO_MAX_WALK_SPEED
-        sprite.f = false // flipped => false
+        // flipped => false
+        sprite.f = false
       } else if (keys[C_KEY_MOVE_LEFT]) {
         sprite.cfs = 1
         this.x -= C_HERO_MAX_WALK_SPEED
-        sprite.f = true // flipped => true
+        // flipped => true
+        sprite.f = true
       } else {
         sprite.cfs = 0
       }
+
+      var onGround = (this.y >= 276)
+
+      if (keys[C_KEY_MOVE_RIGHT]) {
+        this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
+        // Set the direction (unless we are shooting+strafing)
+        if (!shooting) {
+          this.s[0].f = false // flipped => false
+        }
+      } else if (keys[C_KEY_MOVE_LEFT]) {
+        this.x = max(0, this.x - C_HERO_MAX_WALK_SPEED)
+        // Set the direction (unless we are shooting+strafing)
+        if (!shooting) {
+          this.s[0].f = true // flipped => true
+        }
+      }
+
+      // Jumping controls
+      if (keys[C_KEY_JUMP]) {
+
+        // If user is already jumping, check if the have a 2nd jump available, if so double jump!
+        if (jumping && !doubleJumpUsed && doubleJumpReady) {
+          jumpFramesLeft  = C_HERO_JUMP_LENGTH
+          doubleJumpUsed  = true
+          doubleJumpReady = false
+          fx.playJumpSound()
+
+        } else if (!jumping) {
+
+          // If not already jumping, jump!
+          onGround       = false
+          jumping        = true
+          jumpFramesLeft = C_HERO_JUMP_LENGTH
+          fx.playJumpSound()
+
+        }
+
+      } else {
+
+        // If the user is jumping but hasn't jumped a 2nd time,
+        // they can now press the jump key again to use their 2nd jump
+        if (jumping && !doubleJumpUsed) {
+          doubleJumpReady = true
+        }
+
+      }
+
+      // Jumping movement
+      if (jumping && jumpFramesLeft > 0) {
+        this.yv = -C_HERO_JUMP_SPEED
+        jumpFramesLeft--
+
+      } else if (onGround) {
+
+        // If we are on the ground, reset jumping state
+        jumping         = false
+        doubleJumpUsed  = false
+        doubleJumpReady = false
+
+        // Reset falling
+        this.yv = 0
+
+      } else {
+        // Apply gravity
+        this.yv += C_WORLD_GRAVITY
+      }
+
+      this.y += this.yv
+
     }
   )
 }
@@ -408,7 +488,7 @@ function createHealthBar() {
 
     // Update function
     function() {
-      this.s[1].sx = floor((health/C_MAX_HEALTH) * C_UI_HEALTH_BAR_WIDTH)
+      this.s[1].sx = floor((health/C_HERO_MAX_HEALTH) * C_UI_HEALTH_BAR_WIDTH)
     }
   )
 }
@@ -489,9 +569,9 @@ function createText(layer, text, x, y, scale, duration, delay) {
    * param c {number} change in value
    * param d {number} duration
    */
-  var easeInOutQuint = function (t, b, c, d) {
-    if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b
-    return c/2*((t-=2)*t*t*t*t + 2) + b
+  var easeInOutQuint = function(t, b, c, d) {
+    if ((t /= d / 2) < 1) return c / 2 * t * t * t * t * t + b
+    return c / 2 * ((t -= 2) * t * t * t * t + 2) + b
   }
 
   var startingY = -10 * scale
@@ -545,14 +625,14 @@ function createMenu() {
 }
 
 function createPostMenu(score, highScore) {
-  createText(C_LAYER_UI_IN_MENU, 'game over', 80, 60, 8, 120 ,20)
-  createText(C_LAYER_UI_IN_MENU, 'score', 40, 120, 4, 120 ,80)
-  createText(C_LAYER_UI_IN_MENU, score.toString(), 40, 150, 4, 120 ,80)
+  createText(C_LAYER_UI_IN_MENU, 'game over', 80, 60, 8, 30 ,0)
+  createText(C_LAYER_UI_IN_MENU, 'score', 40, 120, 4, 40 ,80)
+  createText(C_LAYER_UI_IN_MENU, score.toString(), 40, 150, 4, 40 ,80)
 
-  createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 120 ,160)
+  createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 40 ,160)
 
-  createText(C_LAYER_UI_IN_MENU, ((score >= highScore) ? 'new ' : '') + 'high score', 40, 220, 4, 120 ,100)
-  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 120 ,100)
+  createText(C_LAYER_UI_IN_MENU, ((score > highScore) ? 'new ' : '') + 'high score', 40, 220, 4, 40 ,100)
+  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 40 ,100)
 
 }
 
@@ -645,6 +725,9 @@ function drawEntitySprites(entity) {
 function startNewGame() {
   console.log('startNewGame() called')
 
+  // Clear the background (in case there is one left over from the last game)
+  layers[C_LAYER_BACKGROUND] = []
+
   // Clear the Menu UI layer
   layers[C_LAYER_UI_IN_MENU] = []
   layers[C_LAYER_UI_IN_GAME] = []
@@ -653,7 +736,7 @@ function startNewGame() {
   gameStatus = C_STATUS_PLAYING
 
   // Health to 100%
-  health = C_MAX_HEALTH
+  health = C_HERO_MAX_HEALTH
 
   // Reset score
   score = 0
@@ -663,6 +746,11 @@ function startNewGame() {
 
   // Reset hero state
   shooting = false
+  jumping = false
+  doubleJumpUsed  = false
+  doubleJumpReady = false
+  jumpFramesLeft = 0
+
 
   // Current round to 0/1
 
@@ -696,9 +784,9 @@ function hurt(damage) {
 function lose() {
 
   console.log('game over!')
+  timewarp = true
 
   // Reset per-game layers+entities (chained intentionally)
-  layers[C_LAYER_BACKGROUND] = []
   layers[C_LAYER_ENEMIES] = []
   layers[C_LAYER_HERO] = []
   layers[C_LAYER_PROJECTILES] = []
@@ -709,13 +797,14 @@ function lose() {
 
   console.log('score', score)
 
+  createPostMenu(score, highScore)
+
   // Update high score if appropriate
   if (score > highScore) {
-    console.log('NEW HIGH SCORE!')
     localStorage[C_LS_HIGH_SCORE] = highScore = score
   }
 
-  createPostMenu(score, highScore)
+
 }
 
 // OMG, code pathz so hot right now
