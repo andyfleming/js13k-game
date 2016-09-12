@@ -456,7 +456,8 @@ function createHero() {
         this.yv += C_WORLD_GRAVITY
       }
 
-      this.y += this.yv
+      // Set the y position (but clamp it)
+      this.y = min(canvasHeight - 24, this.y + this.yv)
 
     }
   )
