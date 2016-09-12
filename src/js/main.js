@@ -344,10 +344,16 @@ function createHero() {
     function() {
       if (keys[C_KEY_MOVE_RIGHT]) {
         this.x += C_HERO_MAX_WALK_SPEED
-        this.s[0].f = false // flipped => false
+        // Set the direction (unless we are shooting+strafing)
+        if (!shooting) {
+          this.s[0].f = false // flipped => false
+        }
       } else if (keys[C_KEY_MOVE_LEFT]) {
         this.x -= C_HERO_MAX_WALK_SPEED
-        this.s[0].f = true // flipped => true
+        // Set the direction (unless we are shooting+strafing)
+        if (!shooting) {
+          this.s[0].f = true // flipped => true
+        }
       }
     }
   )
