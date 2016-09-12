@@ -258,7 +258,7 @@ var C_ENEMY_TYPE_DRONE = 2
 var C_ROUNDS = [
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
-    [C_ENEMY_TYPE_MONKEY, 0, 1],
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 3],
     [C_ENEMY_TYPE_MONKEY, 60, 1],
     [C_ENEMY_TYPE_BASIC_BITCH, 120, 5]
   ]
@@ -704,6 +704,20 @@ function createEnemyBasicBitch(x, y) {
       }
     ],
     function() {
+      var sprite = this.s[0]
+
+      // if facing left
+      if (sprite.f) {
+        if (this.x > playerEntity.x - 50) {
+          this.x = max(0, this.x - randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED))
+        } else sprite.f = false
+
+      } else {
+        if (this.x < playerEntity.x + 50) {
+          this.x = min(canvasWidth - 20, this.x + randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED))
+        } else sprite.f = true
+      }
+
       this.y = min(canvasHeight - 16, this.y + 10)
     }
   )
@@ -725,21 +739,20 @@ function createEnemyMonkey(x, y) {
     ],
     function() {
       var sprite = this.s[0]
-      sprite.f = (this.x >= playerEntity.x)
+
+      // if facing left
       if (sprite.f) {
-        if (this.x < playerEntity.x + 20) {
-          this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
-        } else {
-          sprite.f = false
-        }
-      } else {
-        if (this.x > playerEntity.x - 20) {
+        if (this.x > playerEntity.x - 50) {
           this.x = max(0, this.x - C_ENEMY_WALK_SPEED)
-        } else {
-          sprite.f = true
-        }
+        } else sprite.f = false
+
+      } else {
+        if (this.x < playerEntity.x + 50) {
+          this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
+        } else sprite.f = true
       }
-      this.y = min(canvasHeight - 16, this.y + 10)
+
+      this.y = min(canvasHeight - 20, this.y + 10)
     }
   )
 }
