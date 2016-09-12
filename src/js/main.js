@@ -175,7 +175,8 @@ var C_LAYER_ENEMY_PROJECTILES = 4
 var C_LAYER_HERO_PROJECTILES  = 5
 var C_LAYER_FOREGROUND        = 6
 var C_LAYER_UI_IN_GAME        = 7
-var C_LAYER_UI_IN_MENU        = 8
+var C_LAYER_TEXT_IN_GAME      = 8
+var C_LAYER_UI_IN_MENU        = 9
 
 // "Layers"
 var layers = [
@@ -202,6 +203,9 @@ var layers = [
   [],
 
   // in-game UI
+  [],
+
+  // in-game text
   [],
 
   // in-menu UI
@@ -251,6 +255,7 @@ var TEXT = {
   z: [575,6]
 }
 
+var roundPending
 var roundNum
 var enemiesToDefeat
 var enemySpawnQueue
@@ -269,7 +274,7 @@ var C_ROUNDS = [
   ],
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 100],
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
     [C_ENEMY_TYPE_MONKEY, 200, 10],
     [C_ENEMY_TYPE_BASIC_BITCH, 400, 10]
   ]
@@ -784,7 +789,7 @@ function createEnemyMonkey(x, y) {
 
 
 function createMenu() {
-  createText(C_LAYER_UI_IN_MENU, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 ,20)
+  createText(C_LAYER_UI_IN_MENU, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 , 0)
   createText(C_LAYER_UI_IN_MENU, 't00 powerful', 310, 30, 2, 120, 80)
   createText(C_LAYER_UI_IN_MENU, 't00 sentient', 340, 50, 2, 120, 120)
   createText(C_LAYER_UI_IN_MENU, 'so we we made an even stronger one to wipe them out', 90, 70, 2, 120, 200)
@@ -922,6 +927,7 @@ function startNewGame() {
   invincibleUntil = frameCount - 1
 
   // Current round to 0/1
+  roundPending = false
   roundNum = 0
   enemiesToDefeat = 0
   enemySpawnQueue = []
@@ -1036,7 +1042,16 @@ function update() {
     }
 
     if (enemiesToDefeat === 0) {
-      startNextRound()
+      if (!roundPending) {
+        roundPending = true
+        createText(C_LAYER_TEXT_IN_GAME, 'Round ' + (roundNum+1), 100, 80, 4, 30, 0)
+        setTimeout(function() {
+          roundPending = false
+          layers[C_LAYER_TEXT_IN_GAME] = []
+          startNextRound()
+        }, 2000)
+      }
+
     } else {
       // Check if there are any enemies ready to spawn?
       // but only spawn one every 4th frame
