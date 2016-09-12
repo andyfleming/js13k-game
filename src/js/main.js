@@ -126,6 +126,7 @@ var doubleJumpUsed
 var doubleJumpReady
 var jumpFramesLeft
 var playerEntity
+var invincibleUntil
 
 var C_FRAMESET_RED_PIXEL = [[[0, 0, 1, 1]]]
 var C_FRAMESET_WHITE_PIXEL = [[[1, 0, 1, 1]]]
@@ -262,7 +263,7 @@ var C_ENEMY_TYPE_DRONE = 2
 var C_ROUNDS = [
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 3],
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 50],
     [C_ENEMY_TYPE_MONKEY, 60, 1],
     [C_ENEMY_TYPE_BASIC_BITCH, 120, 5]
   ]
@@ -777,14 +778,14 @@ function createMenu() {
   createText(C_LAYER_UI_IN_MENU, 'press enter to begin', 40, 260, 4, 120, 460)
 }
 
-function createPostMenu(score, highScore) {
+function createPostMenu(score, highScore, newHighScore) {
   createText(C_LAYER_UI_IN_MENU, 'game over', 80, 60, 8, 30 ,0)
   createText(C_LAYER_UI_IN_MENU, 'score', 40, 120, 4, 40 ,80)
   createText(C_LAYER_UI_IN_MENU, score.toString(), 40, 150, 4, 40 ,80)
 
   createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 40 ,160)
 
-  createText(C_LAYER_UI_IN_MENU, ((score > highScore) ? 'new ' : '') + 'high score', 40, 220, 4, 40 ,100)
+  createText(C_LAYER_UI_IN_MENU, (newHighScore ? 'new ' : '') + 'high score', 40, 220, 4, 40 ,100)
   createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 40 ,100)
 
 }
@@ -904,6 +905,7 @@ function startNewGame() {
   doubleJumpUsed  = false
   doubleJumpReady = false
   jumpFramesLeft = 0
+  invincibleUntil = frameCount - 1
 
   // Current round to 0/1
   roundNum = 0
@@ -921,6 +923,11 @@ function startNewGame() {
 }
 
 function hurt(damage) {
+
+  if (frameCount < invincibleUntil) {
+    return
+  }
+
   console.log('TAKING DAMAGE! ' +  damage)
   health = Math.max(0, health - damage)
   console.log('health => ' + health)
@@ -928,6 +935,8 @@ function hurt(damage) {
   if (health === 0) {
     lose()
   }
+
+  invincibleUntil = frameCount + 10
 }
 
 function lose() {
@@ -947,12 +956,15 @@ function lose() {
 
   console.log('score', score)
 
-  createPostMenu(score, highScore)
+  var newHighScore = false
 
   // Update high score if appropriate
   if (score > highScore) {
     localStorage[C_LS_HIGH_SCORE] = highScore = score
+    newHighScore = true
   }
+
+  createPostMenu(score, highScore, newHighScore)
 
 
 }
@@ -1055,6 +1067,7 @@ function handleHeroBulletCollidingIntoEnemy(heroProjectile) {
     }
     enemy.d()
     heroProjectile.d()
+    score += 50 + randInt(0,5)
   })
 }
 
