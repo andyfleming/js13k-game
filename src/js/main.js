@@ -87,7 +87,9 @@ var C_STARS_NUM = 200
 // Hero and World Settings
 var C_WORLD_GRAVITY = 0.5
 var C_HERO_MAX_WALK_SPEED = 4
-var C_MAX_HEALTH = 1000
+var C_HERO_MAX_HEALTH = 1000
+var C_HERO_JUMP_LENGTH = 5 // in frames
+var C_HERO_JUMP_SPEED = 6
 
 // UI
 var C_UI_HEALTH_BAR_WIDTH = 150
@@ -118,6 +120,7 @@ var shooting
 var jumping
 var doubleJumpUsed
 var doubleJumpReady
+var jumpFramesLeft
 
 
 
@@ -350,7 +353,7 @@ function createHero() {
     // Update function
     function() {
 
-      var onGround = (this.y < 266)
+      var onGround = (this.y >= 276)
 
       if (keys[C_KEY_MOVE_RIGHT]) {
         this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
@@ -366,8 +369,42 @@ function createHero() {
         }
       }
 
-      // gravity via y velocity
-      if (onGround) {
+      // Jumping controls
+      if (keys[C_KEY_JUMP]) {
+
+        // If user is already jumping, check if the have a 2nd jump available, if so double jump!
+        if (jumping && !doubleJumpUsed && doubleJumpReady) {
+          jumpFramesLeft  = C_HERO_JUMP_LENGTH
+          doubleJumpUsed  = true
+          doubleJumpReady = false
+          fx.playJumpSound()
+
+        } else if (!jumping) {
+
+          // If not already jumping, jump!
+          onGround       = false
+          jumping        = true
+          jumpFramesLeft = C_HERO_JUMP_LENGTH
+          fx.playJumpSound()
+
+        }
+
+      } else {
+
+        // If the user is jumping but hasn't jumped a 2nd time,
+        // they can now press the jump key again to use their 2nd jump
+        if (jumping && !doubleJumpUsed) {
+          doubleJumpReady = true
+        }
+
+      }
+
+      // Jumping movement
+      if (jumping && jumpFramesLeft > 0) {
+        this.yv = -C_HERO_JUMP_SPEED
+        jumpFramesLeft--
+
+      } else if (onGround) {
 
         // If we are on the ground, reset jumping state
         jumping         = false
@@ -380,8 +417,9 @@ function createHero() {
       } else {
         // Apply gravity
         this.yv += C_WORLD_GRAVITY
-        this.y += this.yv
       }
+
+      this.y += this.yv
 
 
 
@@ -423,7 +461,7 @@ function createHealthBar() {
 
     // Update function
     function() {
-      this.s[1].sx = floor((health/C_MAX_HEALTH) * C_UI_HEALTH_BAR_WIDTH)
+      this.s[1].sx = floor((health/C_HERO_MAX_HEALTH) * C_UI_HEALTH_BAR_WIDTH)
     }
   )
 }
@@ -654,7 +692,7 @@ function startNewGame() {
   gameStatus = C_STATUS_PLAYING
 
   // Health to 100%
-  health = C_MAX_HEALTH
+  health = C_HERO_MAX_HEALTH
 
   // Reset score
   score = 0
@@ -667,6 +705,7 @@ function startNewGame() {
   jumping = false
   doubleJumpUsed  = false
   doubleJumpReady = false
+  jumpFramesLeft = 0
 
 
   // Current round to 0/1
