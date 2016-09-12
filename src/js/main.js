@@ -211,52 +211,6 @@ function gameStatusIs(status) {
 //
 //}
 
-var EXAMPLE_SPRITE = {
-
-  // X offset - should this be on the framesets?
-  xo: 0,
-
-  // Y offset
-  yo: 0,
-
-  w: 10,
-  h: 10,
-
-  // Optional: color
-  c: 0xFF00FF00,
-
-  // Framesets
-  fs: [
-    [/* x */ 0, /* y */ 0, /* w */ 10, /* h */ 10, /* animation speed (optional) */ 1,]
-  ]
-
-}
-
-
-// This is an example that doesn't get compiled in, but is just here to document an interface
-var EXAMPLE_ENTITY = {
-
-  // hitbox: [x1, y1, x2, y2]
-  // hitbox changes independently of sprites
-  // hitbox is relative to sprite
-  // If the origin is center, it could be something like:
-  // [-100, -100, 100, 100]
-  hb: [0, 0, 200, 200],
-
-  // sprite stack
-  s: [],
-
-  f: false, // flipped (bool)
-
-  update: function() {}
-
-  // proposed: action stack - used for things like falling
-  //as: []
-
-  //d: destroyFunction
-
-}
-
 /**
  * Entities need to be able to "destroy" themselves. This creates a function they can store to do so.
  *
