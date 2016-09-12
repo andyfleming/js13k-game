@@ -367,8 +367,6 @@ function createHero() {
       }
 
       // gravity via y velocity
-      this.yv =  ? this.yv + C_WORLD_GRAVITY : 0
-
       if (onGround) {
 
         // If we are on the ground, reset jumping state
@@ -381,7 +379,7 @@ function createHero() {
 
       } else {
         // Apply gravity
-        this.yv + C_WORLD_GRAVITY
+        this.yv += C_WORLD_GRAVITY
         this.y += this.yv
       }
 
