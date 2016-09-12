@@ -81,6 +81,9 @@ var C_RAIN_NUM_DROPS = 200
 var C_RAIN_TIME_WARP_FACTOR = 0.2
 var C_RAIN_ANGLE = -4
 
+// Stars
+var C_STARS_NUM = 200
+
 // Hero and World Settings
 var C_WORLD_GRAVITY = 0.5
 var C_HERO_MAX_WALK_SPEED = 4
@@ -252,7 +255,24 @@ function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunctio
   })
 }
 
-function createBackground() {
+function createStars() {
+
+  var ss = []
+
+  for (var i = 0; i < C_STARS_NUM; i++) {
+    ss.push({
+      c: 0x55FFFFFF,
+      xo: randInt(8, canvasWidth - 8),
+      yo: randInt(8, canvasHeight - 8),
+      fs: [[[1, 0, 1, 1]]]
+    })
+  }
+
+  createEntity(C_LAYER_BACKGROUND, 0, 0, null, ss, function() {})
+
+}
+
+function createBuildings() {
 
   var ss = []
 
@@ -285,14 +305,7 @@ function createBackground() {
 
   }
 
-  createEntity(
-    C_LAYER_BACKGROUND,
-    0,
-    0,
-    null,
-    ss,
-    function() {}
-  )
+  createEntity(C_LAYER_BACKGROUND, 0, 0, null, ss, function() {})
 
 }
 
@@ -566,7 +579,8 @@ function startNewGame() {
 
   // etc, etc
 
-  createBackground()
+  createStars()
+  createBuildings()
   createHero()
   createText(C_LAYER_UI_IN_GAME, 'HEALTH', 7, 11, 1)
   createHealthBar()
