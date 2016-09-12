@@ -331,10 +331,12 @@ function createFunctionToDestroyEntity(layerIndex, entityIndex) {
  * @param {number[]} hitboxCoords (relative to origin point)
  * @param {object[]} spriteStack
  * @param {function} updateFunction
+ * @param {int} [type]
  */
-function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunction) {
+function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunction, type) {
   var newIndex = layers[layerIndex].length
   layers[layerIndex].push({
+    type: type,
     x: x,
     y: y,
     xv: 0,
@@ -520,12 +522,13 @@ function createHero() {
       // Set the y position (but clamp it)
       this.y = min(canvasHeight - 24, this.y + this.yv)
       playerEntity = this
-    }
+    },
+    C_ENEMY_TYPE_BASIC_BITCH
   )
 }
 
 function createHealthBar() {
-  //console.log('createHealthBar() called')
+  console.log('createHealthBar() called')
 
   createEntity(
     C_LAYER_UI_IN_GAME,
@@ -783,7 +786,8 @@ function createEnemyMonkey(x, y) {
       }
 
       this.y = min(canvasHeight - 20, this.y + 10)
-    }
+    },
+    C_ENEMY_TYPE_MONKEY
   )
 }
 
@@ -1096,7 +1100,12 @@ function handleHeroEnemyCollision(enemy) {
 
   // TODO: handle collision
   //console.log('enemy and hero colliding!')
-  hurt(10)
+  if (enemy.type === C_ENEMY_TYPE_MONKEY) {
+    hurt(60)
+  } else {
+    hurt(30)
+  }
+
 }
 
 function handleHeroBulletCollidingIntoEnemy(heroProjectile) {
