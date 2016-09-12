@@ -354,6 +354,7 @@ function createHealthBar() {
         sy: C_UI_HEALTH_BAR_HEIGHT
       }
     ],
+    
 
     // Update function
     function() {
