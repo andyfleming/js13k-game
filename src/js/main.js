@@ -1,12 +1,12 @@
 import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
-import MusicController from '../js-old/sound/music-controller'
+//import MusicController from '../js-old/sound/music-controller'
 import FxController from '../js-old/sound/fx-controller'
 
-var music = new MusicController()
+//var music = new MusicController()
 var fx = new FxController()
 
-music.playSong1()
-fx.playEnemyHit()
+//music.playSong1()
+//fx.playEnemyHit()
 
 /* ===================================================================================================
  NOTES
@@ -57,12 +57,12 @@ var keys = {}
 
 // Handle keys events
 addEvtListener('keydown', function(e) {
-  console.log(e.which + ' key DOWN')
+  //console.log(e.which + ' key DOWN')
   keys[e.which] = true
 })
 
 addEvtListener('keyup', function(e) {
-  console.log(e.which + ' key UP')
+  //console.log(e.which + ' key UP')
   keys[e.which] = false
 })
 
@@ -263,9 +263,15 @@ var C_ENEMY_TYPE_DRONE = 2
 var C_ROUNDS = [
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 50],
-    [C_ENEMY_TYPE_MONKEY, 60, 1],
-    [C_ENEMY_TYPE_BASIC_BITCH, 120, 5]
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 5],
+    [C_ENEMY_TYPE_MONKEY, 200, 1],
+    [C_ENEMY_TYPE_BASIC_BITCH, 400, 5]
+  ],
+  [
+    // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 100],
+    [C_ENEMY_TYPE_MONKEY, 200, 10],
+    [C_ENEMY_TYPE_BASIC_BITCH, 400, 10]
   ]
 ]
 
@@ -394,7 +400,7 @@ function createBuildings() {
 }
 
 function createHero() {
-  console.log('createHero() called')
+  //console.log('createHero() called')
 
   createEntity(
     C_LAYER_HERO,
@@ -430,7 +436,7 @@ function createHero() {
           var startX = this.x + ((sprite.f) ? 0 : 8)
           //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
           createBullet(startX, this.y + randInt(9, 11), sprite.f)
-          console.log('Spawn bullet!')
+          //console.log('Spawn bullet!')
           fx.playShoot()
           shooting = true
         }
@@ -514,7 +520,7 @@ function createHero() {
 }
 
 function createHealthBar() {
-  console.log('createHealthBar() called')
+  //console.log('createHealthBar() called')
 
   createEntity(
     C_LAYER_UI_IN_GAME,
@@ -557,7 +563,7 @@ function createHealthBar() {
 }
 
 function createRaindrop() {
-  console.log('createRaindrop() called')
+  //console.log('createRaindrop() called')
 
   var x = (rand() * (canvasWidth + 600)) - 300
   var y =  rand() * canvasHeight
@@ -679,7 +685,7 @@ function createText(layer, text, x, y, scale, duration, delay) {
 }
 
 function createBullet(x, y, flipped) {
-  console.log('createBullet() called')
+  //console.log('createBullet() called')
 
   createEntity(
     C_LAYER_HERO_PROJECTILES,
@@ -717,17 +723,25 @@ function createEnemyBasicBitch(x, y) {
     function() {
       var sprite = this.s[0]
 
-      // if facing left
-      if (sprite.f) {
-        if (this.x > playerEntity.x - 50) {
-          this.x = max(0, this.x - randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED))
-        } else sprite.f = false
-
-      } else {
-        if (this.x < playerEntity.x + 50) {
-          this.x = min(canvasWidth - 20, this.x + randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED))
-        } else sprite.f = true
+      if (this.x <= 0) {
+        sprite.f = false
+      } else if (this.x >= canvasWidth - 16) {
+        sprite.f = true
       }
+
+      this.x += ((sprite.f) ? -1 : 1) * randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED)
+
+      // if facing left
+      //if (sprite.f) {
+      //  if (this.x > playerEntity.x - 50) {
+      //    this.x = max(0, this.x - randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED))
+      //  } else sprite.f = false
+      //
+      //} else {
+      //  if (this.x < playerEntity.x + 50) {
+      //    this.x = min(canvasWidth - 20, this.x + randInt(C_ENEMY_WALK_SPEED - 1, C_ENEMY_WALK_SPEED))
+      //  } else sprite.f = true
+      //}
 
       this.y = min(canvasHeight - 16, this.y + 10)
     }
@@ -878,7 +892,7 @@ function drawEntitySprites(entity) {
 
 // createGame startGame createNew newGame
 function startNewGame() {
-  console.log('startNewGame() called')
+  //console.log('startNewGame() called')
 
   // Clear the background (in case there is one left over from the last game)
   layers[C_LAYER_BACKGROUND] = []
@@ -928,9 +942,11 @@ function hurt(damage) {
     return
   }
 
-  console.log('TAKING DAMAGE! ' +  damage)
+  //console.log('TAKING DAMAGE! ' +  damage)
   health = Math.max(0, health - damage)
-  console.log('health => ' + health)
+  //console.log('health => ' + health)
+
+  fx.playHitSound()
 
   if (health === 0) {
     lose()
@@ -941,7 +957,7 @@ function hurt(damage) {
 
 function lose() {
 
-  console.log('game over!')
+  //console.log('game over!')
   timewarp = true
 
   // Reset per-game layers+entities (chained intentionally)
@@ -954,7 +970,7 @@ function lose() {
   // Set game status to post-game screen
   gameStatus = C_STATUS_POSTGAME
 
-  console.log('score', score)
+  //console.log('score', score)
 
   var newHighScore = false
 
@@ -1003,10 +1019,10 @@ function update() {
   if (keys[C_KEY_PAUSE_GAME]) {
     if (gameStatusIs(C_STATUS_PLAYING)) {
       // TODO: pause game
-      console.log('PAUSE!')
+      //console.log('PAUSE!')
     } else if (gameStatusIs(C_STATUS_PAUSED)) {
       // TODO: resume game
-      console.log('RESUME!')
+      //console.log('RESUME!')
     }
   }
 
@@ -1015,21 +1031,29 @@ function update() {
   // Updates that should only happen in game:
   if (gameStatusIs(C_STATUS_PLAYING)) {
 
+    if (frameCount % 10 === 0) {
+      //console.log('enemies: ' + enemiesToDefeat)
+    }
+
     if (enemiesToDefeat === 0) {
       startNextRound()
     } else {
       // Check if there are any enemies ready to spawn?
       // but only spawn one every 4th frame
-      if (frameCount % 15 === 0) {
-        var group = enemySpawnQueue[0]
+      if (frameCount % 10 === 0) {
+        if (enemySpawnQueue.length > 0) {
+          var group = enemySpawnQueue[0]
 
-        if (frameCount > group[1]) {
-          if (group[2] === 0) {
-            // pop the group off
-          } else {
-            // spawn the type of enemy and decrement the count left of that group to spawn
-            [createEnemyBasicBitch, createEnemyMonkey][group[0]](500, 100)
-            group[2]--
+          if (frameCount > group[1]) {
+            if (group[2] === 0) {
+              // pop the group off
+              enemySpawnQueue.shift()
+            } else {
+              // spawn the type of enemy and decrement the count left of that group to spawn
+              [createEnemyBasicBitch, createEnemyMonkey][group[0]](randInt(400,600), 0)
+              //enemiesToDefeat++
+              group[2]--
+            }
           }
         }
       }
@@ -1056,8 +1080,8 @@ function handleHeroEnemyCollision(enemy) {
   }
 
   // TODO: handle collision
-  console.log('enemy and hero colliding!')
-  hurt(50)
+  //console.log('enemy and hero colliding!')
+  hurt(10)
 }
 
 function handleHeroBulletCollidingIntoEnemy(heroProjectile) {
@@ -1068,6 +1092,8 @@ function handleHeroBulletCollidingIntoEnemy(heroProjectile) {
     enemy.d()
     heroProjectile.d()
     score += 50 + randInt(0,5)
+    fx.playEnemyHit()
+    enemiesToDefeat--
   })
 }
 
