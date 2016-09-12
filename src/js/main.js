@@ -114,16 +114,20 @@ var health
 var shooting
 
 // Layer "ids"
-var C_LAYER_WORLD       = 0
-var C_LAYER_ENEMIES     = 1
-var C_LAYER_HERO        = 2
-var C_LAYER_PROJECTILES = 3
-var C_LAYER_FOREGROUND  = 4
-var C_LAYER_UI_IN_GAME  = 5
-var C_LAYER_UI_IN_MENU  = 6
+var C_LAYER_BACKGROUND  = 0
+var C_LAYER_WORLD       = 1
+var C_LAYER_ENEMIES     = 2
+var C_LAYER_HERO        = 3
+var C_LAYER_PROJECTILES = 4
+var C_LAYER_FOREGROUND  = 5
+var C_LAYER_UI_IN_GAME  = 6
+var C_LAYER_UI_IN_MENU  = 7
 
 // "Layers"
 var layers = [
+
+  // background
+  [],
 
   // world
   [],
@@ -248,6 +252,50 @@ function createEntity(layerIndex, x, y, hitboxCoords, spriteStack, updateFunctio
   })
 }
 
+function createBackground() {
+
+  var ss = []
+
+  // Two layers
+  for (var i = 0; i <= 1; i++) {
+
+    var cursor = -50
+
+    while (cursor < canvasWidth + 50) {
+
+      var widthForBuilding = randInt(20, 30)
+      var heightForBuilding = i ? randInt(50, 140) : randInt(150, 250)
+
+      // back layer: #07070a
+      // front layer: 151521
+
+      ss.push({
+        c: i ? 0xFF211515 : 0xFF0a0707,
+        xo: cursor,
+        yo: canvasHeight - heightForBuilding,
+        fs: [[[1, 0, 1, 1]]],
+        sx: widthForBuilding,
+        sy: heightForBuilding
+      })
+
+      // Move the cursor forward our building's width plus a random amount
+      //cursor += widthForBuilding + (rand() > 0.5 ? 0 : randInt(4, 20))
+      cursor += widthForBuilding + (i ? 0 : randInt(0, 30))
+    }
+
+  }
+
+  createEntity(
+    C_LAYER_BACKGROUND,
+    0,
+    0,
+    null,
+    ss,
+    function() {}
+  )
+
+}
+
 function createHero() {
   console.log('createHero() called')
 
@@ -256,7 +304,7 @@ function createHero() {
 
     // origin (x, y)
     100,
-    100,
+    276,
 
     // Hitbox
     [0, 0, 18, 24],
@@ -467,28 +515,9 @@ function drawEntitySprites(entity) {
       canvas.scale(sprite.sx || 1, sprite.sy || 1)
     }
 
-    //var currentFrame = 0
-    //var frame = [902, 0, 18, 24]
-    //var frame = [1012, 0, 1, 1]
     var frame = sprite.fs[0][0]
-    //if (frameCount % 3 === 0) {
-    //  console.log(frame)
-    //}
     var x1 = frame[0] / spriteSheetTexture.width
     var x2 = (frame[0] + frame[2]) / spriteSheetTexture.width
-
-    //if (frameCount % 10 === 0) {
-    //  console.log([
-    //    0,
-    //    0,
-    //    frame[2],
-    //    frame[3], // NOTE: this is where y-scale needs to happen
-    //    sprite.f ? x2 : x1,       // sprite location in sheet (draw backwards if "f"/flipped)
-    //    frame[1] / spriteSheetTexture.height,
-    //    sprite.f ? x1 : x2,
-    //    (frame[1] + frame[3]) / spriteSheetTexture.height
-    //  ])
-    //}
 
     canvas.img(
       spriteSheetTexture,
@@ -537,6 +566,7 @@ function startNewGame() {
 
   // etc, etc
 
+  createBackground()
   createHero()
   createText(C_LAYER_UI_IN_GAME, 'HEALTH', 7, 11, 1)
   createHealthBar()
@@ -566,6 +596,7 @@ function lose() {
   console.log('game over!')
 
   // Reset per-game layers+entities (chained intentionally)
+  layers[C_LAYER_BACKGROUND] = []
   layers[C_LAYER_ENEMIES] = []
   layers[C_LAYER_HERO] = []
   layers[C_LAYER_PROJECTILES] = []
@@ -625,8 +656,6 @@ function update() {
     // Check for timewarp
     timewarp = !!keys[C_KEY_TIMEWARP]
   }
-
-  console.log(layers)
 
   layers.forEach(function(group) {
     group.forEach(updateEntity)
