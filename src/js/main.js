@@ -102,6 +102,9 @@ var C_STATUS_PLAYING  = 1
 var C_STATUS_PAUSED   = 2
 var C_STATUS_POSTGAME = 3
 
+// Enemy Settings
+var C_ENEMY_WALK_SPEED = 3
+
 /**
  * Game Status (state). Keeps track of whether we are at the menu, playing, paused, post-game, etc
  *
@@ -122,6 +125,7 @@ var jumping
 var doubleJumpUsed
 var doubleJumpReady
 var jumpFramesLeft
+var playerEntity
 
 var C_FRAMESET_RED_PIXEL = [[[0, 0, 1, 1]]]
 var C_FRAMESET_WHITE_PIXEL = [[[1, 0, 1, 1]]]
@@ -246,7 +250,7 @@ var roundNum
 var enemiesToDefeat
 var enemySpawnQueue
 var C_ENEMY_TYPE_BASIC_BITCH = 0
-var C_ENEMY_TYPE_MED_ENEMY = 1
+var C_ENEMY_TYPE_MONKEY = 1
 var C_ENEMY_TYPE_DRONE = 2
 
 // TODO: xy?
@@ -254,8 +258,8 @@ var C_ENEMY_TYPE_DRONE = 2
 var C_ROUNDS = [
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 3],
-    [C_ENEMY_TYPE_MED_ENEMY, 60, 1],
+    [C_ENEMY_TYPE_MONKEY, 0, 1],
+    [C_ENEMY_TYPE_MONKEY, 60, 1],
     [C_ENEMY_TYPE_BASIC_BITCH, 120, 5]
   ]
 ]
@@ -493,7 +497,7 @@ function createHero() {
 
       // Set the y position (but clamp it)
       this.y = min(canvasHeight - 24, this.y + this.yv)
-
+      playerEntity = this
     }
   )
 }
@@ -705,8 +709,39 @@ function createEnemyBasicBitch(x, y) {
   )
 }
 
-function createAnotherEnemy(x, y) {
-
+function createEnemyMonkey(x, y) {
+  createEntity(
+    C_LAYER_ENEMIES,
+    x,
+    y,
+    [0, 0, 2, 4],
+    [
+      {
+        cf: 0,
+        cfs: 0,
+        f: true,
+        fs: C_FRAMESET_ENEMY_2
+      }
+    ],
+    function() {
+      var sprite = this.s[0]
+      sprite.f = (this.x >= playerEntity.x)
+      if (sprite.f) {
+        if (this.x < playerEntity.x + 20) {
+          this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
+        } else {
+          sprite.f = false
+        }
+      } else {
+        if (this.x > playerEntity.x - 20) {
+          this.x = max(0, this.x - C_ENEMY_WALK_SPEED)
+        } else {
+          sprite.f = true
+        }
+      }
+      this.y = min(canvasHeight - 16, this.y + 10)
+    }
+  )
 }
 
 
@@ -958,7 +993,7 @@ function update() {
             // pop the group off
           } else {
             // spawn the type of enemy and decrement the count left of that group to spawn
-            [createEnemyBasicBitch, createAnotherEnemy][group[0]](500, 100)
+            [createEnemyBasicBitch, createEnemyMonkey][group[0]](500, 100)
             group[2]--
           }
         }
