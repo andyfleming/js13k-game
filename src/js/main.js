@@ -81,6 +81,10 @@ var C_RAIN_NUM_DROPS = 200
 var C_RAIN_TIME_WARP_FACTOR = 0.2
 var C_RAIN_ANGLE = -4
 
+// Confetti
+var C_CONFETTI_NUM = 200
+var C_CONFETTI_COLORS = [0xFFDBBCD8, 0xFFFFA800, 0xFF60DCFF, 0xFF82DD53, 0xFF4A4FEB]
+
 // Stars
 var C_STARS_NUM = 200
 
@@ -97,10 +101,11 @@ var C_UI_HEALTH_BAR_WIDTH = 150
 var C_UI_HEALTH_BAR_HEIGHT = 5
 
 // Game status constants
-var C_STATUS_MENU     = 0
-var C_STATUS_PLAYING  = 1
-var C_STATUS_PAUSED   = 2
-var C_STATUS_POSTGAME = 3
+var C_STATUS_MENU       = 0
+var C_STATUS_PLAYING    = 1
+var C_STATUS_PAUSED     = 2
+var C_STATUS_POSTGAME   = 3
+var C_STATUS_KILLSCREEN = 4
 
 // Enemy Settings
 var C_ENEMY_WALK_SPEED = 3
@@ -269,14 +274,45 @@ var C_ROUNDS = [
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 5],
-    [C_ENEMY_TYPE_MONKEY, 200, 1],
-    [C_ENEMY_TYPE_BASIC_BITCH, 400, 5]
+   // [C_ENEMY_TYPE_MONKEY, 200, 1],
+    //[C_ENEMY_TYPE_BASIC_BITCH, 400, 5]
   ],
   [
-    // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
     [C_ENEMY_TYPE_MONKEY, 200, 10],
     [C_ENEMY_TYPE_BASIC_BITCH, 400, 10]
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
   ]
 ]
 
@@ -528,7 +564,7 @@ function createHero() {
 }
 
 function createHealthBar() {
-  console.log('createHealthBar() called')
+  //console.log('createHealthBar() called')
 
   createEntity(
     C_LAYER_UI_IN_GAME,
@@ -621,6 +657,58 @@ function createRaindrop() {
         rotation = Math.atan2(length, xSpeed) + 1.5708
 
         this.y = 0
+      }
+    }
+  )
+}
+
+function createConfetti() {
+  var x = (rand() * (canvasWidth + 600)) - 300
+  var y =  rand() * canvasHeight
+  var xSpeed = (-3 + rand() * 3 + 1.5) * 0.2
+  var ySpeed = randInt(4, 9) * 0.3
+  var length = 5
+  var rotation = Math.atan2(length, randInt(-5, 5)) + 1.5708
+
+  createEntity(
+    C_LAYER_FOREGROUND,
+
+    // origin (x, y)
+    x,
+    y,
+
+    // Hitbox
+    [0, 0, 1, 1],
+
+    // Sprite stack
+    [
+      // droplet sprite
+      {
+        // current frame
+        c: C_CONFETTI_COLORS[randInt(0, C_CONFETTI_COLORS.length)],
+        cf: 0,
+        cfs: 0,
+        sx: 2,
+        sy: length,
+        r: rotation,
+        f: false,
+        fs: C_FRAMESET_WHITE_PIXEL
+      }
+    ],
+
+    // Update function
+    function() {
+      this.x += xSpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
+      this.y += ySpeed * (timewarp ? C_RAIN_TIME_WARP_FACTOR : 1)
+
+      // If drop is out of range, regenerate it
+      // TODO: update
+      if (this.y > canvasHeight) {
+        this.y = 0
+        this.x = (rand() * (canvasWidth + 600)) - 300
+        xSpeed = (-3 + rand() * 3 + 1.5) * 0.2
+        ySpeed = randInt(4, 9) * 0.3
+        rotation = Math.atan2(length, xSpeed) + 1.5708
       }
     }
   )
@@ -965,6 +1053,23 @@ function hurt(damage) {
   invincibleUntil = frameCount + 10
 }
 
+function win() {
+  layers[C_LAYER_ENEMIES] = []
+  layers[C_LAYER_HERO_PROJECTILES] = []
+  layers[C_LAYER_ENEMY_PROJECTILES] = []
+  layers[C_LAYER_UI_IN_GAME] = []
+  layers[C_LAYER_FOREGROUND] = []
+
+  gameStatus = C_STATUS_KILLSCREEN
+
+  createText(C_LAYER_UI_IN_MENU, 'YOU WIN', 125, 80, 13, 200, 0)
+
+  for (var a = 0; a < C_CONFETTI_NUM; a++) {
+    createConfetti()
+  }
+
+}
+
 function lose() {
 
   //console.log('game over!')
@@ -1046,6 +1151,12 @@ function update() {
     }
 
     if (enemiesToDefeat === 0) {
+
+      if (roundNum === C_ROUNDS.length) {
+        win()
+        return
+      }
+
       if (!roundPending) {
         roundPending = true
         createText(C_LAYER_TEXT_IN_GAME, 'Round ' + (roundNum+1), 100, 80, 4, 30, 0)
@@ -1154,8 +1265,10 @@ spriteSheetImage.onload = function() {
 
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
     createRaindrop()
-    createMenu()
   }
+
+  // Create the menu screen
+  createMenu()
 
   // Start loop
   loop()
