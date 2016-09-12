@@ -86,6 +86,10 @@ var C_WORLD_GRAVITY = 0.5
 var C_HERO_MAX_WALK_SPEED = 4
 var C_MAX_HEALTH = 1000
 
+// UI
+var C_UI_HEALTH_BAR_WIDTH = 150
+var C_UI_HEALTH_BAR_HEIGHT = 5
+
 // Game status constants
 var C_STATUS_MENU     = 0
 var C_STATUS_PLAYING  = 1
@@ -110,7 +114,8 @@ var C_LAYER_ENEMIES     = 1
 var C_LAYER_HERO        = 2
 var C_LAYER_PROJECTILES = 3
 var C_LAYER_FOREGROUND  = 4
-var C_LAYER_UI          = 5
+var C_LAYER_UI_IN_GAME  = 5
+var C_LAYER_UI_IN_MENU  = 6
 
 // "Layers"
 var layers = [
@@ -130,7 +135,10 @@ var layers = [
   // foreground
   [],
 
-  // UI
+  // in-game UI
+  [],
+
+  // in-menu UI
   []
 
 ]
@@ -315,6 +323,8 @@ function createHero() {
   )
 }
 
+function createHealthBar() {}
+
 function createRaindrop() {
   console.log('createRaindrop() called')
 
@@ -369,12 +379,12 @@ function createRaindrop() {
   )
 }
 
-function createText(text, x, y, scale) {
+function createText(layer, text, x, y, scale) {
   scale = scale || 1
   var runningOffsetX = 0
   var lastWidth = 0;
   createEntity(
-    C_LAYER_UI,
+    layer,
 
     // origin
     x, y,
@@ -496,6 +506,9 @@ function drawEntitySprites(entity) {
 function startNewGame() {
   console.log('startNewGame() called')
 
+  // Clear the Menu UI layer
+  layers[C_LAYER_UI_IN_MENU] = []
+
   // Set game status...
   gameStatus = C_STATUS_PLAYING
 
@@ -512,7 +525,8 @@ function startNewGame() {
   // etc, etc
 
   createHero()
-  createText('dont go crazy andy', 90, 90, 2)
+  createHealthBar()
+  createText(C_LAYER_UI_IN_GAME, 'dont go crazy andy', 90, 90, 2)
 
 
   // Temp: Fake dying
@@ -539,6 +553,7 @@ function lose() {
   layers[C_LAYER_ENEMIES]
     = layers[C_LAYER_HERO]
     = layers[C_LAYER_PROJECTILES]
+    = layers[C_LAYER_UI_IN_GAME]
     = []
 
   console.log('game over!')
