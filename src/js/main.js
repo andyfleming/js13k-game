@@ -111,6 +111,7 @@ var timewarp = false
 var highScore = localStorage[C_LS_HIGH_SCORE] || 0
 var score
 var health
+var shooting
 
 // Layer "ids"
 var C_LAYER_WORLD       = 0
@@ -526,6 +527,12 @@ function startNewGame() {
   // Reset score
   score = 0
 
+  // Reset timewarp
+  timewarp = false
+
+  // Reset hero state
+  shooting = false
+
   // Current round to 0/1
 
   // etc, etc
@@ -598,6 +605,23 @@ function update() {
     }
   }
 
+  // TODO: make sure certain checks/updates only run during GAME_ACTIVE_STATUS
+
+  // Check for shooting
+  // TODO: add multiple weapon types?
+  if (keys[C_KEY_SHOOT]) {
+    if (!shooting) {
+      //var startX = self.sprite.posX + ((self.lastXDirection === 'l') ? 0 : 8)
+      //spawnBullet(startX, self.sprite.posY + randInt(9, 11), self.lastXDirection)
+      console.log('Spawn bullet!')
+      fx.playShoot()
+      shooting = true
+    }
+  } else {
+    shooting = false
+  }
+
+  // Check for timewarp
   timewarp = !!keys[C_KEY_TIMEWARP]
 
   layers.forEach(function(group) {
