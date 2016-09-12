@@ -475,7 +475,7 @@ function createText(layer, text, x, y, scale, duration, delay) {
   var endY = y
 
   var animStart = frameCount + (delay || 0)
-  var animEnd = animStart + (duration || 0)
+  var animEnd = animStart + (duration || 1)
 
   createEntity(
     layer,
@@ -504,9 +504,9 @@ function createText(layer, text, x, y, scale, duration, delay) {
       }),
 
     function() {
-      if (frameCount <= animStart) return
-      if (frameCount >= animEnd) return
-      this.y = floor(easeInOutQuint(frameCount - animStart, startingY, endY - startingY, duration))
+      if (frameCount < animStart) return
+      if (frameCount > animEnd) return
+      this.y = floor(easeInOutQuint(frameCount - animStart, startingY, endY - startingY, (duration || 1)))
     }
   )
 }
