@@ -275,16 +275,22 @@ function gameStatusIs(status) {
   return (status === gameStatus || (typeof status === typeof [] && status.indexOf(gameStatus) !== -1))
 }
 
-//function colliding(entity1, entity2) {
-//
-//  return (
-//    s1.posX < s2.posX + s2.width &&
-//    s1.posX + s1.width > s2.posX &&
-//    s1.posY < s2.posY + s2.height &&
-//    s1.height + s1.posY > s2.posY
-//  )
-//
-//}
+/**
+ * Check if two entities are colliding
+ *
+ * @param {{h:number[],x:number,y:number}} e1
+ * @param {{h:number[],x:number,y:number}}  e2
+ *
+ * @returns {boolean}
+ */
+function colliding(e1, e2) {
+  return (
+    e1.x + e1.h[0] < e2.x + e2.h[0] + e2.h[2] &&
+    e1.x + e1.h[0] + e1.h[2] > e2.x + e2.h[0] &&
+    e1.y + e1.h[1] < e2.y + e2.h[1] + e2.h[3] &&
+    e1.y + e1.h[3] + e1.h[1] > e2.y + e2.h[1]
+  )
+}
 
 /**
  * Entities need to be able to "destroy" themselves. This creates a function they can store to do so.
@@ -1020,6 +1026,20 @@ function update() {
   layers.forEach(function(group) {
     group.forEach(updateEntity)
   })
+
+  // Check for collisions
+  layers[C_LAYER_ENEMIES].forEach(handleHeroEnemyCollision)
+
+}
+
+function handleHeroEnemyCollision(enemy) {
+  if (!enemy || !colliding(enemy, playerEntity)) {
+    return
+  }
+
+  // TODO: handle collision
+  console.log('enemy and hero colliding!')
+  hurt(50)
 }
 
 // Let's draw pretty pictures
