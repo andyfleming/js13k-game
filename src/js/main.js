@@ -520,6 +520,18 @@ function createMenu() {
   createText(C_LAYER_UI_IN_MENU, 'press enter to begin', 40, 260, 4, 120, 460)
 }
 
+function createPostMenu(score, highScore) {
+  createText(C_LAYER_UI_IN_MENU, 'game over', 80, 60, 8, 120 ,20)
+  createText(C_LAYER_UI_IN_MENU, 'score', 40, 120, 4, 120 ,80)
+  createText(C_LAYER_UI_IN_MENU, score.toString(), 40, 150, 4, 120 ,80)
+
+  createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 120 ,160)
+
+  createText(C_LAYER_UI_IN_MENU, ((score >= highScore) ? 'new ' : '') + 'high score', 40, 220, 4, 120 ,100)
+  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 120 ,100)
+
+}
+
 function updateEntity(entity) {
   if (!entity) {
     return
@@ -665,6 +677,7 @@ function lose() {
     localStorage[C_LS_HIGH_SCORE] = highScore = score
   }
 
+  createPostMenu(score, highScore)
 }
 
 // OMG, code pathz so hot right now
