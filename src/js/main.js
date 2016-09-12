@@ -169,7 +169,7 @@ var TEXT = {
   f: [340,5],
   g: [345,5],
   h: [350,5],
-  i: [356,3],
+  i: [356,2],
   j: [358,5],
   k: [363,5],
   l: [368,5],
@@ -430,15 +430,42 @@ function createRaindrop() {
   )
 }
 
-function createText(layer, text, x, y, scale) {
+/**
+ * param layer {number}
+ * param text {string}
+ * param x {number}
+ * param y {number}
+ * param scale {number}
+ * duration {number}
+ * delay {number}
+ */
+function createText(layer, text, x, y, scale, duration, delay) {
   scale = scale || 1
   var runningOffsetX = 0
-  var lastWidth = 0;
+  var lastWidth = 0
+
+  /**
+   * param t {number} current time
+   * param b {number} starting value
+   * param c {number} change in value
+   * param d {number} duration
+   */
+  var easeInOutQuint = function (t, b, c, d) {
+    if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b
+    return c/2*((t-=2)*t*t*t*t + 2) + b
+  }
+
+  var startingY = -10 * scale
+  var endY = y
+
+  var animStart = frameCount + (delay || 0)
+  var animEnd = animStart + (duration || 0)
+
   createEntity(
     layer,
 
     // origin
-    x, y,
+    x, startingY,
 
     // hitbox
     [0, 0, 1, 1],
@@ -460,8 +487,21 @@ function createText(layer, text, x, y, scale) {
         }
       }),
 
-    function() {}
+    function() {
+      if (frameCount < animStart) return
+      if (frameCount > animEnd) return
+      this.y = easeInOutQuint(frameCount - animStart, startingY, endY - startingY, duration)
+    }
   )
+}
+
+function createMenu() {
+  createText(C_LAYER_UI_IN_GAME, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 ,20)
+  createText(C_LAYER_UI_IN_GAME, 't00 powerful', 310, 30, 2, 120, 80)
+  createText(C_LAYER_UI_IN_GAME, 't00 sentient', 340, 50, 2, 120, 120)
+  createText(C_LAYER_UI_IN_GAME, 'so we we made an even stronger one to wipe them out', 90, 70, 2, 120, 200)
+  createText(C_LAYER_UI_IN_GAME, 'ROBO SLAYER 3ooo', 30, 100, 8, 120, 300)
+  createText(C_LAYER_UI_IN_GAME, 'press enter to begin', 40, 260, 4, 120, 460)
 }
 
 function updateEntity(entity) {
@@ -565,6 +605,7 @@ function startNewGame() {
   gameStatus = C_STATUS_PLAYING
 
   // Reset all the state
+  layers[C_LAYER_UI_IN_GAME] = []
 
   // Health to 100%
   health = C_MAX_HEALTH
@@ -578,7 +619,6 @@ function startNewGame() {
 
   createHero()
   createHealthBar()
-  createText(C_LAYER_UI_IN_GAME, 'dont go crazy andy', 90, 90, 2)
 
   // Temp: Fake dying
   setTimeout(function() { score += 100 }, 1000)
@@ -681,6 +721,7 @@ spriteSheetImage.onload = function() {
 
   for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
     createRaindrop()
+    createMenu()
   }
 
   // Start loop
