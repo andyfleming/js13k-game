@@ -122,7 +122,22 @@ var doubleJumpUsed
 var doubleJumpReady
 var jumpFramesLeft
 
+var C_FRAMESET_WHITE_PIXEL = [[[1, 0, 1, 1]]]
+var C_FRAMESET_RED_PIXEL = [[[0, 0, 1, 1]]]
+var C_FRAMESET_RAIN_PIXEL = [[[2, 0, 1, 1]]]
+var C_FRAMESET_HERO = [
 
+  // Standing "frameset" (only one frame)
+  [[74, 0, 18, 24]],
+
+  // Walking frameset (example)
+  [
+    [92, 0, 18, 24],
+    [110, 0, 18, 24],
+    [128, 0, 18, 24],
+    [146, 0, 18, 24]
+  ]
+]
 
 // Layer "ids"
 var C_LAYER_BACKGROUND  = 0
@@ -342,20 +357,7 @@ function createHero() {
       {
         cf: 0,
         cfs: 0,
-        // frameset
-        fs: [
-
-          // Standing "frameset" (only one frame)
-          [[74, 0, 18, 24]],
-
-          // Walking frameset (example)
-          [
-            [92, 0, 18, 24],
-            [110, 0, 18, 24],
-            [128, 0, 18, 24],
-            [146, 0, 18, 24]
-          ]
-        ]
+        fs: C_FRAMESET_HERO
       },
 
       // TODO, dashing decorator sprite
@@ -364,34 +366,24 @@ function createHero() {
     // Update function
     function() {
       var sprite = this.s[0]
-      if (keys[C_KEY_MOVE_RIGHT]) {
-        sprite.cfs = 1
-        this.x += C_HERO_MAX_WALK_SPEED
-        // flipped => false
-        sprite.f = false
-      } else if (keys[C_KEY_MOVE_LEFT]) {
-        sprite.cfs = 1
-        this.x -= C_HERO_MAX_WALK_SPEED
-        // flipped => true
-        sprite.f = true
-      } else {
-        sprite.cfs = 0
-      }
-
       var onGround = (this.y >= 276)
 
       if (keys[C_KEY_MOVE_RIGHT]) {
         this.x = min(canvasWidth - 18, this.x + C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
         if (!shooting) {
-          this.s[0].f = false // flipped => false
+          sprite.f = false // flipped => false
         }
+        sprite.cfs = 1
       } else if (keys[C_KEY_MOVE_LEFT]) {
         this.x = max(0, this.x - C_HERO_MAX_WALK_SPEED)
         // Set the direction (unless we are shooting+strafing)
         if (!shooting) {
-          this.s[0].f = true // flipped => true
+          sprite.f = true // flipped => true
         }
+        sprite.cfs = 1
+      } else {
+        sprite.cfs = 0
       }
 
       // Jumping controls
@@ -471,7 +463,7 @@ function createHealthBar() {
         cfs: 0,
         xo: -1,
         yo: -1,
-        fs: [[[1, 0, 1, 1]]],
+        fs: C_FRAMESET_WHITE_PIXEL,
         sx: C_UI_HEALTH_BAR_WIDTH + 2,
         sy: C_UI_HEALTH_BAR_HEIGHT + 2
       },
@@ -480,7 +472,7 @@ function createHealthBar() {
       {
         cf: 0,
         cfs: 0,
-        fs: [[[0, 0, 1, 1]]],
+        fs: C_FRAMESET_RED_PIXEL,
         sx: C_UI_HEALTH_BAR_WIDTH,
         sy: C_UI_HEALTH_BAR_HEIGHT
       }
@@ -526,7 +518,7 @@ function createRaindrop() {
         sy: length,
         r: rotation,
         f: false,
-        fs: [[[2, 0, 1, 1]]]
+        fs: C_FRAMESET_RAIN_PIXEL
       }
     ],
 
