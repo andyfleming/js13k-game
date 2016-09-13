@@ -1157,15 +1157,15 @@ function win() {
   var newHighScore = false
 
   // Update high score if appropriate
-  if (score > highScore) {
-    localStorage[C_LS_HIGH_SCORE] = highScore = score
+  if (score > localStorage[C_LS_HIGH_SCORE]) {
+    localStorage[C_LS_HIGH_SCORE] = score
     newHighScore = true
   }
 
   createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 40 ,160)
 
   createText(C_LAYER_UI_IN_MENU, (newHighScore ? 'new ' : '') + 'high score', 40, 220, 4, 40 ,100)
-  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 40 ,100)
+  createText(C_LAYER_UI_IN_MENU, localStorage[C_LS_HIGH_SCORE].toString(), 40, 250, 4, 40 ,100)
 
   for (var a = 0; a < C_CONFETTI_NUM; a++) {
     createConfetti()
