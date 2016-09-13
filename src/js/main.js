@@ -797,6 +797,9 @@ function createBullet(x, y, flipped) {
     ],
     function() {
       this.x += ((this.s[0].f) ? -1 : 1) * C_BULLET_SPEED
+      if (this.x < -10 || this.x > canvasWidth + 10) {
+        this.d()
+      }
     }
   )
 }
