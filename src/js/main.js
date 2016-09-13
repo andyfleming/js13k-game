@@ -93,6 +93,7 @@ var C_WORLD_GRAVITY = 0.5
 var C_BULLET_SPEED = 5
 var C_HERO_MAX_WALK_SPEED = 4
 var C_HERO_MAX_HEALTH = 1000
+var C_HERO_INC_HEALTH = C_HERO_MAX_HEALTH * 0.2
 var C_HERO_JUMP_LENGTH = 5 // in frames
 var C_HERO_JUMP_SPEED = 6
 
@@ -557,6 +558,21 @@ function createHero() {
       // Set the y position (but clamp it)
       this.y = min(canvasHeight - 24, this.y + this.yv)
       playerEntity = this
+
+      // setTint based on damage
+      if (frameCount < invincibleUntil) {
+        if (frameCount % 20) {
+          this.tint = !this.tint
+        }
+      } else {
+        this.tint = false
+      }
+
+      if (this.tint) {
+        sprite.c = 0xFF000099
+      } else {
+        sprite.c = 0xFFFFFFFF
+      }
     },
     C_ENEMY_TYPE_BASIC_BITCH
   )
@@ -1104,6 +1120,19 @@ function win() {
 
   createText(C_LAYER_UI_IN_MENU, 'YOU WIN', 125, 80, 13, 200, 0)
 
+  var newHighScore = false
+
+  // Update high score if appropriate
+  if (score > highScore) {
+    localStorage[C_LS_HIGH_SCORE] = highScore = score
+    newHighScore = true
+  }
+
+  createText(C_LAYER_UI_IN_MENU, 'press enter to restart', 440, 220, 2, 40 ,160)
+
+  createText(C_LAYER_UI_IN_MENU, (newHighScore ? 'new ' : '') + 'high score', 40, 220, 4, 40 ,100)
+  createText(C_LAYER_UI_IN_MENU, highScore.toString(), 40, 250, 4, 40 ,100)
+
   for (var a = 0; a < C_CONFETTI_NUM; a++) {
     createConfetti()
   }
@@ -1144,7 +1173,9 @@ function lose() {
 
 // roundNum === 0
 function startNextRound() {
-
+  if (health < C_HERO_MAX_HEALTH) {
+    health += min(C_HERO_INC_HEALTH, C_HERO_MAX_HEALTH - health)
+  }
   var fc = frameCount
 
   if (C_ROUNDS.length > roundNum) {
