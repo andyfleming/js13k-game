@@ -34,6 +34,7 @@ var fx = new FxController()
 var addEvtListener = document.addEventListener
 var rand = Math.random
 var floor = Math.floor
+var ceil = Math.ceil
 var min = Math.min
 var max = Math.max
 
@@ -274,17 +275,28 @@ var C_ROUNDS = [
   [
     // [enemyType, delay, numberOfThatEnemyTypeToSpawn]
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 5],
-   // [C_ENEMY_TYPE_MONKEY, 200, 1],
-    //[C_ENEMY_TYPE_BASIC_BITCH, 400, 5]
   ],
   [
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
-    [C_ENEMY_TYPE_MONKEY, 200, 10],
+    [C_ENEMY_TYPE_MONKEY, 200, 3],
     [C_ENEMY_TYPE_BASIC_BITCH, 400, 10]
   ],
   [
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
     [C_ENEMY_TYPE_MONKEY, 20, 3],
+    [C_ENEMY_TYPE_JUMPING_MONKEY, 0, 5],
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+
+  ],
+  [
+    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
+    [C_ENEMY_TYPE_MONKEY, 20, 3],
+  ],
+  [
+    [C_ENEMY_TYPE_JUMPING_MONKEY, 0, 30],
   ],
   [
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
@@ -299,18 +311,7 @@ var C_ROUNDS = [
     [C_ENEMY_TYPE_MONKEY, 20, 3],
   ],
   [
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
-    [C_ENEMY_TYPE_MONKEY, 20, 3],
-  ],
-  [
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
-    [C_ENEMY_TYPE_MONKEY, 20, 3],
-  ],
-  [
-    [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
-    [C_ENEMY_TYPE_MONKEY, 20, 3],
-  ],
-  [
+    [C_ENEMY_TYPE_JUMPING_MONKEY, 0, 20],
     [C_ENEMY_TYPE_BASIC_BITCH, 0, 10],
     [C_ENEMY_TYPE_MONKEY, 20, 3],
   ]
@@ -905,11 +906,19 @@ function createEnemyJumpingMonkey(x, y) {
     [0, 0, 20, 18],
     [
       {
-        c: 0xFF00FF00,
+        c: 0xFFAAFFAA,
         cf: 0,
         cfs: 0,
         f: true,
-        fs: C_FRAMESET_ENEMY_2
+        fs: C_FRAMESET_ENEMY_2,
+
+        // Special properties (hacking for state)
+        // special frame offset
+        sfo: [2,3,5,7,11,13][randInt(0, 5)],
+
+        // special speed offset
+        sso: randInt(-1,1)
+
       }
     ],
     function() {
@@ -918,16 +927,41 @@ function createEnemyJumpingMonkey(x, y) {
       // if facing left
       if (sprite.f) {
         if (this.x > playerEntity.x - 50) {
-          this.x = max(0, this.x - C_ENEMY_WALK_SPEED)
+          this.x = max(0, this.x - C_ENEMY_WALK_SPEED) // + sprite.sso (we could use this for a harder enemy type)
         } else sprite.f = false
 
       } else {
         if (this.x < playerEntity.x + 50) {
-          this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
+          this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED) // - sprite.sso (we could use this for a harder enemy type)
         } else sprite.f = true
       }
 
-      this.y = min(canvasHeight - 20, this.y + 10)
+      var hasHitGroundInitially = this.hasHitGroundInitially || false
+
+      // Jumping
+      if (hasHitGroundInitially) {
+
+        if ((frameCount + sprite.sfo) % 30 > 15) {
+          this.y -= 4
+        } else {
+          this.y = min(this.y + 4, canvasHeight - 20)
+        }
+      } else {
+        // If the player hasn't hit the ground initially, apply gravity
+        this.y = min(canvasHeight - 20, this.y + 10)
+
+        if (this.y === canvasHeight - 20) {
+          console.log('hit ground')
+          this.hasHitGroundInitially = true
+        }
+      }
+
+      //
+      //if (this.y === canvasHeight - 20 && !hasHitGroundInitially) {
+      //
+      //}
+
+
     },
     C_ENEMY_TYPE_JUMPING_MONKEY
   )
