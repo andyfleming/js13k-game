@@ -812,7 +812,7 @@ function createEnemyBasicBitch(x, y) {
       {
         cf: 0,
         cfs: 0,
-        f: true,
+        f: rand() > 0.5,
         fs: C_FRAMESET_ENEMY_1
       }
     ],
@@ -1180,7 +1180,7 @@ function update() {
               enemySpawnQueue.shift()
             } else {
               // spawn the type of enemy and decrement the count left of that group to spawn
-              [createEnemyBasicBitch, createEnemyMonkey][group[0]](randInt(400,600), 0)
+              [createEnemyBasicBitch, createEnemyMonkey][group[0]](randInt(20, canvasWidth - 20), 0)
               //enemiesToDefeat++
               group[2]--
             }
