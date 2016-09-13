@@ -265,7 +265,7 @@ var enemiesToDefeat
 var enemySpawnQueue
 var C_ENEMY_TYPE_BASIC_BITCH = 0
 var C_ENEMY_TYPE_MONKEY = 1
-var C_ENEMY_TYPE_DRONE = 2
+var C_ENEMY_TYPE_JUMPING_MONKEY = 2
 
 // TODO: xy?
 // round > spawn queue > spawn event
@@ -881,6 +881,41 @@ function createEnemyMonkey(x, y) {
   )
 }
 
+function createEnemyJumpingMonkey(x, y) {
+  createEntity(
+    C_LAYER_ENEMIES,
+    x,
+    y,
+    [0, 0, 20, 18],
+    [
+      {
+        c: 0xFF00FF00,
+        cf: 0,
+        cfs: 0,
+        f: true,
+        fs: C_FRAMESET_ENEMY_2
+      }
+    ],
+    function() {
+      var sprite = this.s[0]
+
+      // if facing left
+      if (sprite.f) {
+        if (this.x > playerEntity.x - 50) {
+          this.x = max(0, this.x - C_ENEMY_WALK_SPEED)
+        } else sprite.f = false
+
+      } else {
+        if (this.x < playerEntity.x + 50) {
+          this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
+        } else sprite.f = true
+      }
+
+      this.y = min(canvasHeight - 20, this.y + 10)
+    },
+    C_ENEMY_TYPE_JUMPING_MONKEY
+  )
+}
 
 function createMenu() {
   createText(C_LAYER_UI_IN_MENU, 'r0b0ts have become t00 dangerous', 90, 10, 2, 120 , 0)
@@ -1187,7 +1222,11 @@ function update() {
               enemySpawnQueue.shift()
             } else {
               // spawn the type of enemy and decrement the count left of that group to spawn
-              [createEnemyBasicBitch, createEnemyMonkey][group[0]](randInt(20, canvasWidth - 20), 0)
+              [
+                createEnemyBasicBitch,
+                createEnemyMonkey,
+                createEnemyJumpingMonkey
+              ][group[0]](randInt(20, canvasWidth - 20), 0)
               //enemiesToDefeat++
               group[2]--
             }
