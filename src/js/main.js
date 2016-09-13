@@ -558,6 +558,21 @@ function createHero() {
       // Set the y position (but clamp it)
       this.y = min(canvasHeight - 24, this.y + this.yv)
       playerEntity = this
+
+      // setTint based on damage
+      if (frameCount < invincibleUntil) {
+        if (frameCount % 20) {
+          this.tint = !this.tint
+        }
+      } else {
+        this.tint = false
+      }
+
+      if (this.tint) {
+        sprite.c = 0xFF000099
+      } else {
+        sprite.c = 0xFFFFFFFF
+      }
     },
     C_ENEMY_TYPE_BASIC_BITCH
   )
