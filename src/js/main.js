@@ -1224,15 +1224,20 @@ function handleHeroEnemyCollision(enemy) {
 }
 
 function handleHeroBulletCollidingIntoEnemy(heroProjectile) {
+
+  var foundAHit = false
+
   layers[C_LAYER_ENEMIES].forEach(function(enemy) {
-    if (!enemy || !heroProjectile || !colliding(heroProjectile, enemy)) {
+    if (foundAHit || !enemy || !heroProjectile || !colliding(heroProjectile, enemy)) {
       return
     }
     enemy.d()
     heroProjectile.d()
+    console.log('enemy hit')
     score += 50 + randInt(0,5)
     fx.playEnemyHit()
     enemiesToDefeat--
+    foundAHit = true
   })
 }
 
