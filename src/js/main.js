@@ -1,6 +1,6 @@
 import {TinyCanvas, CreateTexture} from './libs/tiny-canvas'
-//import MusicController from '../js-old/sound/music-controller'
-import FxController from '../js-old/sound/fx-controller'
+//import MusicController from './sound/music-controller'
+import FxController from './sound/fx-controller'
 
 //var music = new MusicController()
 var fx = new FxController()
