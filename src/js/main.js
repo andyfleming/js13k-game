@@ -988,6 +988,12 @@ function createPostMenu(score, highScore, newHighScore) {
 
 }
 
+function createRain() {
+  for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
+    createRaindrop()
+  }
+}
+
 function updateEntity(entity) {
   if (!entity) {
     return
@@ -1084,6 +1090,13 @@ function startNewGame() {
   // Clear the Menu UI layer
   layers[C_LAYER_UI_IN_MENU] = []
   layers[C_LAYER_UI_IN_GAME] = []
+
+  // Reset the hero layer
+  layers[C_LAYER_HERO] = []
+
+  // Reset the rain
+  layers[C_LAYER_FOREGROUND] = []
+  createRain()
 
   // Set game status...
   gameStatus = C_STATUS_PLAYING
@@ -1233,7 +1246,7 @@ function startNextRound() {
 function update() {
 
   // Check for start new game trigger
-  if (gameStatusIs([C_STATUS_MENU, C_STATUS_POSTGAME]) && keys[C_KEY_START_GAME]) {
+  if (gameStatusIs([C_STATUS_MENU, C_STATUS_POSTGAME, C_STATUS_KILLSCREEN]) && keys[C_KEY_START_GAME]) {
     startNewGame()
   }
 
@@ -1379,9 +1392,7 @@ spriteSheetImage.onload = function() {
   // Set the canvas background
   canvas.bkg(0.133, 0.125, 0.204)
 
-  for (var a = 0; a < C_RAIN_NUM_DROPS; a++) {
-    createRaindrop()
-  }
+  createRain()
 
   // Create the menu screen
   createMenu()
