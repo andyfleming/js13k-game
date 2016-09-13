@@ -882,14 +882,30 @@ function createEnemyMonkey(x, y) {
 
       // if facing left
       if (sprite.f) {
-        if (this.x > playerEntity.x - 50) {
+        if (this.x < 50) {
+          if (playerEntity.x > this.x) {
+            this.x += C_ENEMY_WALK_SPEED
+          } else {
+            this.x = max(0, this.x - C_ENEMY_WALK_SPEED)
+          }
+        } else if (this.x > playerEntity.x - 50) {
           this.x = max(0, this.x - C_ENEMY_WALK_SPEED)
-        } else sprite.f = false
+        } else {
+          sprite.f = false
+        }
 
       } else {
-        if (this.x < playerEntity.x + 50) {
+        if (this.x > canvasWidth - 50) {
+          if (playerEntity.x < this.x) {
+            this.x -= C_ENEMY_WALK_SPEED
+          } else {
+            this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
+          }
+        } else if (this.x < playerEntity.x + 50) {
           this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED)
-        } else sprite.f = true
+        } else {
+          sprite.f = true
+        }
       }
 
       this.y = min(canvasHeight - 20, this.y + 10)
@@ -926,14 +942,30 @@ function createEnemyJumpingMonkey(x, y) {
 
       // if facing left
       if (sprite.f) {
-        if (this.x > playerEntity.x - 50) {
+        if (this.x < 50) {
+          if (playerEntity.x > this.x) {
+            this.x += C_ENEMY_WALK_SPEED
+          } else {
+            this.x = max(0, this.x - C_ENEMY_WALK_SPEED) // + sprite.sso (we could use this for a harder enemy type)
+          }
+        } else if (this.x > playerEntity.x - 50) {
           this.x = max(0, this.x - C_ENEMY_WALK_SPEED) // + sprite.sso (we could use this for a harder enemy type)
-        } else sprite.f = false
+        } else {
+          sprite.f = false
+        }
 
       } else {
-        if (this.x < playerEntity.x + 50) {
+        if (this.x > canvasWidth - 50) {
+          if (playerEntity.x < this.x) {
+            this.x -= C_ENEMY_WALK_SPEED
+          } else {
+            this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED) // - sprite.sso (we could use this for a harder enemy type)
+          }
+        } else if (this.x < playerEntity.x + 50) {
           this.x = min(canvasWidth - 20, this.x + C_ENEMY_WALK_SPEED) // - sprite.sso (we could use this for a harder enemy type)
-        } else sprite.f = true
+        } else {
+          sprite.f = true
+        }
       }
 
       var hasHitGroundInitially = this.hasHitGroundInitially || false
