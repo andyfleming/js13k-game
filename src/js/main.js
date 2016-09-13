@@ -122,7 +122,6 @@ var C_LS_HIGH_SCORE = 0
 
 // Other game state
 var timewarp = false
-var highScore = localStorage[C_LS_HIGH_SCORE] || 0
 var score
 var health
 var shooting
@@ -1062,6 +1061,9 @@ function win() {
 
   gameStatus = C_STATUS_KILLSCREEN
 
+  // When you win, automatically set the high score to 13k
+  localStorage[C_LS_HIGH_SCORE] = 13000
+
   createText(C_LAYER_UI_IN_MENU, 'YOU WIN', 125, 80, 13, 200, 0)
 
   for (var a = 0; a < C_CONFETTI_NUM; a++) {
@@ -1090,12 +1092,14 @@ function lose() {
   var newHighScore = false
 
   // Update high score if appropriate
-  if (score > highScore) {
-    localStorage[C_LS_HIGH_SCORE] = highScore = score
+  localStorage[C_LS_HIGH_SCORE] = localStorage[C_LS_HIGH_SCORE] || 0
+
+  if (score > localStorage[C_LS_HIGH_SCORE]) {
+    localStorage[C_LS_HIGH_SCORE] = score
     newHighScore = true
   }
 
-  createPostMenu(score, highScore, newHighScore)
+  createPostMenu(score, localStorage[C_LS_HIGH_SCORE], newHighScore)
 
 
 }
